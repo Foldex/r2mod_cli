@@ -107,6 +107,10 @@ All Files, Old Versions, and Backups can be found in `/tmp/r2mod`
 
 ## Changelog
 
+### 1.0.1
+
+- Fixed Update Check
+
 ### 1.0.0
 
 - Initial Release

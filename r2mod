@@ -5,7 +5,7 @@
 ########## Globals ##########
 #############################
 
-VERSION="1.0.0"
+VERSION="1.0.1"
 
 # Dirs
 if [[ -d "$HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/common/Risk of Rain 2" ]]; then
