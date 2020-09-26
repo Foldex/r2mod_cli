@@ -2,6 +2,8 @@
 
 A simple mod manager written in Bash for Linux users.
 
+![Screen](https://raw.githubusercontent.com/Foldex/r2mod_cli/master/img/screen.png)
+
 ## Features
 
 - Simple No-Nonsense Usage
