@@ -11,6 +11,7 @@ A simple mod manager written in Bash for Linux users.
 - Install and Update Mods
 - Hold Specific Mods Back from Updating
 - Enable/Disable Mods
+- Edit Mod Configs
 - Check for Updates for itself
 - Supports Importing/Exporting r2modman profile codes
 - Supports Flatpak Steam Installs
@@ -57,6 +58,7 @@ Accepts shorthand for command names.
 ```
 r2mod ch(eck): Check for Script Updates
 r2mod dis(able): Disable All Mods
+r2mod ed(it) ConfigName: Edit Mod Configs
 r2mod en(able): Enable All Mods
 r2mod exp(ort) ProfileName: Export r2modman mod profile
 r2mod imp(port) ProfileCode: Install r2modman mod profile
@@ -92,6 +94,14 @@ If the version number is left out, any version of that mod will be uninstalled.
 Multiple mods can also be uninstalled
 
 `r2mod uninstall ontrigger-ItemStatsMod MagnusMagnuson-BiggerBazaar`
+
+### Editing Configs
+
+`$EDITOR` environment variable is used to determine which editor to use.
+
+`r2mod edit` will open all BepInEx config files in your editor
+
+`r2mod edit name` will open all matching configs (case insensitive, incomplete names are fine)
 
 ### Holding
 
