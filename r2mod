@@ -128,14 +128,14 @@ function update_check {
 	local API_JSON
 	local API_VER
 
-	API_JSON=$(jq -r -e --arg MOD "foldex-r2mod_cli" '.[] | select(.full_name==$MOD) | .versions[0]' "$API_FILE") || fatal_error "Failed to Parse JSON"
+	API_JSON=$(jq -r -e --arg MOD "Foldex-r2mod_cli" '.[] | select(.full_name==$MOD) | .versions[0]' "$API_FILE") || fatal_error "Failed to Parse JSON"
 	API_VER=$(echo "$API_JSON" | jq -r -e .version_number) || fatal_error "Failed to Parse JSON for version number"
 
 	if version_gt "$API_VER" "$VERSION"; then
 		cecho p "New Version $API_VER Available!"
-		cecho b "https://thunderstore.io/package/foldex/r2mod_cli/"
+		cecho b "https://thunderstore.io/package/Foldex/r2mod_cli/"
 	else
-		cecho g "Up to Date"
+		cecho g "R2Mod Up to Date"
 	fi
 }
 
