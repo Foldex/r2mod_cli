@@ -1,0 +1,73 @@
+#compdef r2mod
+
+_r2mod ()
+{
+	local curcontext="$curcontext" state line R2_DIR CONFIG_DIR PLUGINS_DIR TMP_DIR
+	typeset -A opt_args
+
+	if [[ -d "$HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/common/Risk of Rain 2" ]]; then
+		# Flatpak install
+		R2_DIR="$HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/common/Risk of Rain 2"
+	else
+		R2_DIR="$HOME/.local/share/Steam/steamapps/common/Risk of Rain 2"
+	fi
+
+	BEPIN_DIR="$R2_DIR/BepInEx"
+	CONFIG_DIR="$BEPIN_DIR/config"
+	PLUGINS_DIR="$BEPIN_DIR/plugins"
+	TMP_DIR="/tmp/r2mod"
+
+	_arguments -C \
+		':command:->command' \
+		'*::options:->options'
+
+	case $state in
+		(command)
+
+			local -a subcommands
+			subcommands=(
+				'check:Check for Script Updates'
+				'disable:Disable All Mods'
+				'edit:Edit Mod Configs'
+				'enable:Enable All Mods'
+				'export:Export r2modman mod profile'
+				'import:Import r2modman mod profile'
+				'install:Install New Mod'
+				'list:List Installed Mods'
+				'refresh:Force Refresh Package Cache'
+				'setup:Install a Fresh BepInEx Setup'
+				'uninstall:Uninstall a mod'
+				'update:Update All Existing Mods'
+				'version:Print Version'
+			)
+			_describe -t commands 'r2mod' subcommands
+			;;
+
+		(options)
+			case $line[1] in
+				ed | edit)
+					[[ ! -d "$CONFIG_DIR" ]] && return 1
+					_files -W "$CONFIG_DIR"
+					;;
+
+				ins | install)
+					[[ ! -d "$TMP_DIR/mods" ]] && return 1
+					_files -W "$TMP_DIR/mods" -/
+					;;
+
+				imp | import)
+					[[ ! -d "$TMP_DIR/profile" ]] && return 1
+					_files -W "$TMP_DIR/profile" -F "( config new *.* *_* )" -/
+					;;
+
+				un | uninstall)
+					[[ ! -d "$PLUGINS_DIR" ]] && return 1
+					_files -W "$PLUGINS_DIR" -F "( *R2API* bbepis-BepInExPack-* )" -/
+					;;
+
+				esac
+				;;
+		esac
+	}
+
+_r2mod "$@"
