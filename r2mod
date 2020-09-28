@@ -433,7 +433,7 @@ function edit_configs {
 	cd "$CONFIG_DIR" || fatal_error "Could not cd to config dir"
 
 	shopt -s nocaseglob # case insensitive matching
-	local FILES="*$1*.cfg"
+	local FILES="*$1*"
 	compgen -G "$FILES" > /dev/null || fatal_error "Configs for $1 not found"
 
 	# shellcheck disable=SC2086
