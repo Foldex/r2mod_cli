@@ -40,8 +40,7 @@ The following programs should also be installed:
 
 ### Install
 
-Copy to your `$PATH` and run with `r2mod [command]`
-Make sure it is marked as executable `chmod +x r2mod`
+Extract the zip and run `sudo make install` inside its directory.
 
 ### First Setup
 
