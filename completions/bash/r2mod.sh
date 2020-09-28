@@ -35,8 +35,9 @@ _r2mod()
 				return 0
 				;;
 			ins | install)
-				[[ ! -d "$TMP_DIR/mods" ]] && return 1
-				COMPREPLY=( $(cd "$TMP_DIR/mods" && compgen -d -- "$cur") )
+				[[ ! -f "$TMP_DIR/comp_cache" ]] && return 1
+				local mods=$(cat "$TMP_DIR/comp_cache" | tr '\n' ' ')
+				COMPREPLY=( $(compgen -W "$mods" -- "$cur" ) )
 				return 0
 				;;
 			imp | import)

@@ -51,8 +51,9 @@ _r2mod ()
 					;;
 
 				ins | install)
-					[[ ! -d "$TMP_DIR/mods" ]] && return 1
-					_files -W "$TMP_DIR/mods" -/
+					[[ ! -f "$TMP_DIR/comp_cache" ]] && return 1
+					local mods=( $(< "$TMP_DIR/comp_cache") )
+					compadd -a mods
 					;;
 
 				imp | import)
