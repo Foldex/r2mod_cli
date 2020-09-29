@@ -31,6 +31,7 @@ _r2mod ()
 				'edit:Edit Mod Configs'
 				'enable:Enable All Mods'
 				'export:Export r2modman mod profile'
+				'hold:Toggle Mod Updates'
 				'import:Import r2modman mod profile'
 				'install:Install New Mod'
 				'list:List Installed Mods'
@@ -61,7 +62,7 @@ _r2mod ()
 					_files -W "$TMP_DIR/profile" -F "( config new *.* *_* )" -/
 					;;
 
-				un | uninstall)
+				un | uninstall | hol | hold)
 					[[ ! -d "$PLUGINS_DIR" ]] && return 1
 					_files -W "$PLUGINS_DIR" -F "( *R2API* bbepis-BepInExPack-* )" -/
 					;;

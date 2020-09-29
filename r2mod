@@ -46,6 +46,7 @@ function help {
 	r2mod ed(it) ConfigName: Edit Mod Configs
 	r2mod en(able): Enable All Mods
 	r2mod exp(ort) ProfileName: Export r2modman mod profile
+	r2mod hol(d): Toggle Mod Updates
 	r2mod imp(port) ProfileCode: Install r2modman mod profile
 	r2mod ins(tall) Thunderstore-Dependency-String: Install New Mod
 	r2mod li(st): List Installed Mods
@@ -429,6 +430,28 @@ function toggle_mods {
 	fi
 }
 
+function toggle_hold {
+	cd "$PLUGINS_DIR" || fatal_error "Cannot CD into $PLUGINS_DIR"
+
+	# Remove -HOLD and Add it back if no dir, for easily reusing old bash history
+	local dir="${1%-HOLD}"
+	[[ ! -d "$dir" ]] && dir="$dir-HOLD"
+	[[ ! -d "$dir" ]] && fatal_error "Invalid Directory"
+
+	if [[ "$dir" =~ $MOD_FULL_REGEX ]]; then
+
+		if [[ "${BASH_REMATCH[4]}" == "-HOLD" ]]; then
+			cecho b "$dir: Removing HOLD"
+			mv "$dir" "${dir%-HOLD}" || fatal_error "$dir Failed to Remove Hold"
+		else
+			cecho b "$dir Putting on Hold"
+			mv "$dir" "$dir-HOLD" || fatal_error "$dir Failed to Put on Hold"
+		fi
+	else
+		fatal_error "Invalid Mod Passed"
+	fi
+}
+
 function edit_configs {
 	[[ -z "$EDITOR" ]] && fatal_error "EDITOR env variable not set"
 	cd "$CONFIG_DIR" || fatal_error "Could not cd to config dir"
@@ -613,6 +636,7 @@ case $1 in
     ed*)  edit_configs "$2";;
     en*)  toggle_mods 1;;
     exp*) profile_export "$2";;
+    hol*) toggle_hold "$2";;
     imp*) profile_import "$2" ;;
     ins*) get_pkgs && install_mult_mods "${@:2}";;
     li*)  ls -1 --color=always --group-directories-first "$PLUGINS_DIR";;

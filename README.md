@@ -61,6 +61,7 @@ r2mod dis(able): Disable All Mods
 r2mod ed(it) ConfigName: Edit Mod Configs
 r2mod en(able): Enable All Mods
 r2mod exp(ort) ProfileName: Export r2modman mod profile
+r2mod hol(d): Toggle Mod Updates
 r2mod imp(port) ProfileCode: Install r2modman mod profile
 r2mod ins(tall) Thunderstore-Dependency-String: Install New Mod
 r2mod li(st): List Installed Mods
@@ -105,7 +106,9 @@ Multiple mods can also be uninstalled
 
 ### Holding
 
-Mods can be prevented from being updated by appending `-HOLD` to their folder names.
+Mods can be prevented from being auto updated by running `r2mod hold ModName`.
+
+Run again to remove the hold.
 
 ### Files
 
@@ -116,6 +119,10 @@ All Files, Old Versions, and Backups can be found in `/tmp/r2mod`
 - Resolve and Install Dependencies for mods.
 
 ## Changelog
+
+### 1.0.3
+
+- Added Hold Command
 
 ### 1.0.2
 

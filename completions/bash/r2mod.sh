@@ -6,7 +6,7 @@ _r2mod()
 	local cur prev commands R2_DIR CONFIG_DIR PLUGINS_DIR TMP_DIR
 	cur="${COMP_WORDS[COMP_CWORD]}"
 	prev="${COMP_WORDS[COMP_CWORD-1]}"
-	commands="check disable edit enable export import install list refresh setup uninstall update version"
+	commands="check disable edit enable export hold import install list refresh setup uninstall update version"
 
 	if [[ -d "$HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/common/Risk of Rain 2" ]]; then
 		# Flatpak install
@@ -45,7 +45,7 @@ _r2mod()
 				COMPREPLY=( $(cd "$TMP_DIR/profile" && compgen -f -X "@(*[._]*|config|new)" -- "$cur") )
 				return 0
 				;;
-			un | uninstall)
+			un | uninstall | hol | hold)
 				[[ ! -d "$PLUGINS_DIR" ]] && return 1
 				COMPREPLY=( $(cd "$PLUGINS_DIR" && compgen -d -X "@(*R2API*|bbepis-BepInExPack-*)" -- "$cur") )
 				return 0
