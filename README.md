@@ -15,6 +15,7 @@ A simple mod manager written in Bash for Linux users.
 - Check for Updates for itself
 - Supports Importing/Exporting r2modman profile codes
 - Supports Flatpak Steam Installs
+- Tab Completion
 
 ## Requirements
 
@@ -115,6 +116,10 @@ All Files, Old Versions, and Backups can be found in `/tmp/r2mod`
 - Resolve and Install Dependencies for mods.
 
 ## Changelog
+
+### 1.0.2
+
+- Added Tab Completion
 
 ### 1.0.1
 
