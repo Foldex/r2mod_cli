@@ -175,7 +175,11 @@ function get_pkgs {
 	curl -fSsL "$API_URL" -o "$API_FILE" || fatal_error "Failed to Download Package Cache"
 	check_pkgs || fatal_error "Package Cache Download Incomplete?"
 
+	# Cache Package Names for Bash/ZSH Completion
 	jq -r -e '.[].full_name' "$API_FILE" > "$TMP_DIR/comp_cache" || fatal_error "Failed to Update Completion Cache"
+
+	# Auto Check for Script Updates
+	update_check
 }
 
 function version_gt() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; }

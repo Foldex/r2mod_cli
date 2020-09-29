@@ -123,6 +123,7 @@ All Files, Old Versions, and Backups can be found in `/tmp/r2mod`
 ### 1.0.3
 
 - Added Hold Command
+- Auto Check for R2Mod Updates
 
 ### 1.0.2
 
