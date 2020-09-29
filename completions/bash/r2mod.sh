@@ -47,7 +47,7 @@ _r2mod()
 				;;
 			un | uninstall)
 				[[ ! -d "$PLUGINS_DIR" ]] && return 1
-				COMPREPLY=( $(cd "$PLUGINS_DIR" && compgen -d -X "@(R2API|bbepis-BepInExPack-*)" -- "$cur") )
+				COMPREPLY=( $(cd "$PLUGINS_DIR" && compgen -d -X "@(*R2API*|bbepis-BepInExPack-*)" -- "$cur") )
 				return 0
 				;;
 			*)
