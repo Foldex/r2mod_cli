@@ -532,6 +532,12 @@ function profile_import {
 			}' "$TMP_DIR/profile/export.r2x" > "$TMP_DIR/profile/$1"
 	fi
 
+	if [[ "$2" == "preview" ]]; then
+		cecho b "Previewing..."
+		cat "$TMP_DIR/profile/$1"
+		return
+	fi
+
 	if [[ -z "$SETUP_COMPLETE" ]]; then
 		cecho b "Setting Up BepInEx Install..."
 		setup_bepin 1
@@ -641,7 +647,7 @@ case $1 in
     en*)  toggle_mods 1;;
     exp*) profile_export "$2";;
     hol*) toggle_hold "$2";;
-    imp*) profile_import "$2" ;;
+    imp*) profile_import "$2" "$3" ;;
     ins*) get_pkgs && install_mult_mods "${@:2}";;
     li*)  ls -1 --color=always --group-directories-first "$PLUGINS_DIR";;
     ref*) get_pkgs 1;;

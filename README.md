@@ -124,6 +124,7 @@ All Files, Old Versions, and Backups can be found in `/tmp/r2mod`
 
 - Added Hold Command
 - Auto Check for R2Mod Updates
+- Added profile_import preview option
 
 ### 1.0.2
 
