@@ -96,6 +96,26 @@ for i in "${names[@]}"; do
 	[[ -d "$PLUGINS_DIR/$i" ]] || cecho r "$i Install Failed!" 1
 done
 
+###########
+# Holding #
+###########
+cecho b "Testing Hold"
+
+cecho b "Bad Mod Names" 1
+declare names=( "TestName" "TestName-" )
+for i in "${names[@]}"; do
+	../r2mod hold "$i" | grep -q "Invalid Directory" || cecho r "$i Failed!" 1
+done
+
+cecho b "Valid Mod, Check Hold" 1
+declare names=( "ontrigger-ItemStatsMod-2.0.0" )
+for i in "${names[@]}"; do
+	../r2mod hold "$i" > /dev/null
+	[[ -d "$PLUGINS_DIR/$i-HOLD" && ! -d "$PLUGINS_DIR/$i" ]] || cecho r "$i Hold Failed!" 1
+	../r2mod hold "$i" > /dev/null
+	[[ ! -d "$PLUGINS_DIR/$i-HOLD" && -d "$PLUGINS_DIR/$i" ]] || cecho r "$i UnHold Failed!" 1
+done
+
 ################
 # Uninstalling #
 ################
