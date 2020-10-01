@@ -124,7 +124,8 @@ function sanity_check {
 }
 
 function update_check {
-	get_pkgs
+
+	[[ "$1" != 1 ]] && get_pkgs
 
 	local API_JSON
 	local API_VER
@@ -182,7 +183,7 @@ function get_pkgs {
 		jq -r -e '.[].full_name' "$API_FILE" > "$TMP_DIR/comp_cache" || fatal_error "Failed to Update Completion Cache"
 
 		# Auto Check for Script Updates
-		update_check
+		update_check 1
 	elif [[ -f "$API_FILE" ]] && check_pkgs "$API_FILE"; then
 		# Fall back to old cache if Failed
 		cecho p "Package Cache DL Incomplete, Using Old Cache"
