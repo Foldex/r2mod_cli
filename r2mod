@@ -149,7 +149,7 @@ function check_pkgs {
 	# Make sure the size is right, should be at least 2MB
 	local MIN_SIZE=2000000
 	# shellcheck disable=SC2155
-	local FILE_SIZE=$(wc -c < "$API_FILE")
+	local FILE_SIZE=$(wc -c < "$1")
 	[[ "$FILE_SIZE" -lt "$MIN_SIZE" ]] && return 1
 	return 0
 }
@@ -161,7 +161,7 @@ function get_pkgs {
 		local FILE_TIME=$(date -r "$API_FILE" +%s)
 		local LIMIT=$(date -d "now - $API_TIME" +%s)
 
-		if [[ "$1" != 1 && "$FILE_TIME" -gt "$LIMIT" ]] && check_pkgs; then
+		if [[ "$1" != 1 && "$FILE_TIME" -gt "$LIMIT" ]] && check_pkgs "$API_FILE"; then
 			cecho g "API cache up to date"
 			return
 		fi
@@ -172,14 +172,25 @@ function get_pkgs {
 	fi
 
 	cecho b "Updating API Cache..."
-	curl -fSsL "$API_URL" -o "$API_FILE" || fatal_error "Failed to Download Package Cache"
-	check_pkgs || fatal_error "Package Cache Download Incomplete?"
+	curl -fSsL "$API_URL" -o "$API_FILE.tmp" || fatal_error "Failed to Download Package Cache"
 
-	# Cache Package Names for Bash/ZSH Completion
-	jq -r -e '.[].full_name' "$API_FILE" > "$TMP_DIR/comp_cache" || fatal_error "Failed to Update Completion Cache"
+	if check_pkgs "$API_FILE.tmp"; then
+		# Overwrite old cache if Success
+		mv -f "$API_FILE.tmp" "$API_FILE"
 
-	# Auto Check for Script Updates
-	update_check
+		# Cache Package Names for Bash/ZSH Completion
+		jq -r -e '.[].full_name' "$API_FILE" > "$TMP_DIR/comp_cache" || fatal_error "Failed to Update Completion Cache"
+
+		# Auto Check for Script Updates
+		update_check
+	elif [[ -f "$API_FILE" ]] && check_pkgs "$API_FILE"; then
+		# Fall back to old cache if Failed
+		cecho p "Package Cache DL Incomplete, Using Old Cache"
+		rm "$API_FILE.tmp"
+	else
+		fatal_error "Package Cache DL Incomplete"
+	fi
+
 }
 
 function version_gt() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; }
