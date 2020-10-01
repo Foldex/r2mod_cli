@@ -1,5 +1,8 @@
 # r2mod_cli
 
+| [Features](#features) | [Requirements](#requirements) | [Usage](#usage) | [Changelog](#changelog) |
+|---|---|---|---|
+
 A simple mod manager written in Bash for Linux users.
 
 ![Screen](https://raw.githubusercontent.com/Foldex/r2mod_cli/master/img/screen.png)
@@ -125,6 +128,7 @@ All Files, Old Versions, and Backups can be found in `/tmp/r2mod`
 - Added Hold Command
 - Auto Check for R2Mod Updates
 - Added profile_import preview option
+- Fallback to previous cache if package cache update fails
 
 ### 1.0.2
 
