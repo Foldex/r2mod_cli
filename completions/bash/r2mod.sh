@@ -8,10 +8,14 @@ _r2mod()
 	prev="${COMP_WORDS[COMP_CWORD-1]}"
 	commands="check disable edit enable export hold import install list refresh setup uninstall update version"
 
-	if [[ -d "$HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/common/Risk of Rain 2" ]]; then
+	if [[ -n "$R2MOD_INSTALL_DIR" ]]; then
+		# Custom install location
+		R2_DIR="$R2MOD_INSTALL_DIR"
+	elif [[ -d "$HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/common/Risk of Rain 2" ]]; then
 		# Flatpak install
 		R2_DIR="$HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/common/Risk of Rain 2"
 	else
+		# Default
 		R2_DIR="$HOME/.local/share/Steam/steamapps/common/Risk of Rain 2"
 	fi
 
