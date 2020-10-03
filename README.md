@@ -54,6 +54,16 @@ Some empty folders will be placed in the `BepInEx/plugins` dir, do not remove th
 
 They are used to track updates for certain mods.
 
+#### Custom Install Location
+
+The default install directories for Steam/Flatpak should automatically be handled.
+
+If you've installed Risk of Rain 2 to a different location, please export the environment variable
+
+`$R2MOD_INSTALL_DIR` in your bash profile and point it to your install directory:
+
+`export R2MOD_INSTALL_DIR="$HOME/custom/dir"`
+
 ### Command List
 
 Accepts shorthand for command names.
