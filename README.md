@@ -62,7 +62,7 @@ If you've installed Risk of Rain 2 to a different location, please export the en
 
 `$R2MOD_INSTALL_DIR` in your bash profile and point it to your install directory:
 
-`export R2MOD_INSTALL_DIR="$HOME/custom/dir"`
+`export R2MOD_INSTALL_DIR="$HOME/custom/dir/Risk of Rain 2"`
 
 ### Command List
 
