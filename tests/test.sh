@@ -8,17 +8,20 @@
 [[ "$1" == 1 ]] && ENABLE_EXTRA_TESTS=1
 
 # Dirs
-if [[ -d "$HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/common/Risk of Rain 2" ]]; then
-    # Flatpak install
-	R2_DIR="$HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/common/Risk of Rain 2"
-else
-	R2_DIR="$HOME/.local/share/Steam/steamapps/common/Risk of Rain 2"
-fi
+R2_DIR="/tmp/r2mod/test"
+export R2MOD_INSTALL_DIR="$R2_DIR"
+
+mkdir -p "$R2_DIR" || exit 1
 
 BEPIN_DIR="$R2_DIR/BepInEx"
 CONFIG_DIR="$BEPIN_DIR/config"
 PLUGINS_DIR="$BEPIN_DIR/plugins"
-TMP_DIR="/tmp/../r2mod"
+TMP_DIR="/tmp/r2mod"
+
+if [[ ! -f ../r2mod ]]; then
+	echo "r2mod not found"
+	exit 1
+fi
 
 #########
 # Funcs #
@@ -164,3 +167,11 @@ if [[ "$ENABLE_EXTRA_TESTS" == 1 ]]; then
 		yes n | ../r2mod import "$i" | grep -q "Failed to Download Profile from" || cecho r "$i Failed!" 1
 	done
 fi
+
+############
+# Clean up #
+############
+cecho b "Removing Test Dir"
+[[ -d "$R2_DIR" ]] && rm -rf "$R2_DIR"
+
+cecho b "Test Done!"
