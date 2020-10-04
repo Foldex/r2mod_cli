@@ -55,6 +55,7 @@ function help {
 	r2mod ins(tall) Thunderstore-Dependency-String: Install New Mod
 	r2mod li(st): List Installed Mods
 	r2mod ref(resh): Force Refresh Package Cache
+	r2mod run: Launch Risk of Rain
 	r2mod set(up): Install a Fresh BepInEx Setup
 	r2mod un(install) Thunderstore-Dependency-String: Uninstall Mod
 	r2mod upd(ate): Update All Exisiting Mods
@@ -143,6 +144,33 @@ function update_check {
 	else
 		cecho g "R2Mod Up to Date"
 	fi
+}
+
+function launch_game {
+	local input
+	local steam_cmd="steam"
+
+	if type -P "flatpak" > /dev/null && flatpak list --app | grep -q "com.valvesoftware.Steam"; then
+		cecho b "Using Flatpak Steam"
+		steam_cmd="flatpak run com.valvesoftware.Steam"
+	fi
+
+	cecho b "Risk of Rain 2:"
+	cecho b "(1) Modded (2) Vanilla"
+	read -r input
+
+	if [[ "$input" == 1 ]]; then
+		toggle_mods 1
+	elif [[ "$input" == 2 ]]; then
+		toggle_mods 0
+	else
+		fatal_error "Invalid Selection"
+	fi
+
+	cecho b "Running Risk of Rain..."
+	# shellcheck disable=SC2086
+	$steam_cmd -applaunch 632360 > /dev/null 2>&1 &
+	disown
 }
 
 ####################################
@@ -667,6 +695,7 @@ case $1 in
     ins*) get_pkgs && install_mult_mods "${@:2}";;
     li*)  ls -1 --color=always --group-directories-first "$PLUGINS_DIR";;
     ref*) get_pkgs 1;;
+    run) launch_game;;
     set*) [[ -z "$SETUP_COMPLETE" ]] && setup_bepin;;
     un*)  uninstall_mult_mods "${@:2}";;
     upd*) update_mods;;

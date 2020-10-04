@@ -40,6 +40,7 @@ _r2mod ()
 				'install:Install New Mod'
 				'list:List Installed Mods'
 				'refresh:Force Refresh Package Cache'
+				'run:Launch Risk of Rain'
 				'setup:Install a Fresh BepInEx Setup'
 				'uninstall:Uninstall a mod'
 				'update:Update All Existing Mods'
