@@ -58,7 +58,7 @@ _r2mod ()
 				ins | install)
 					[[ ! -f "$TMP_DIR/comp_cache" ]] && return 1
 					local mods=( $(< "$TMP_DIR/comp_cache") )
-					compadd -a mods
+					compadd -M 'l:|=* r:|=* m:{[:lower:]}={[:upper:]}' -a mods
 					;;
 
 				imp | import)
