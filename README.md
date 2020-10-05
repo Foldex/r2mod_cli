@@ -134,6 +134,12 @@ All Files, Old Versions, and Backups can be found in `/tmp/r2mod`
 
 ## Changelog
 
+### 1.0.4
+
+- Allow Custom Install Locations
+- Improved ZSH Tab Completion
+- Added run Command to Launch Game
+
 ### 1.0.3
 
 - Added Hold Command
