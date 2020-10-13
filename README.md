@@ -75,7 +75,7 @@ r2mod ed(it) ConfigName: Edit Mod Configs
 r2mod en(able): Enable All Mods
 r2mod exp(ort) ProfileName: Export r2modman mod profile
 r2mod hol(d): Toggle Mod Updates
-r2mod imp(port) ProfileCode: Install r2modman mod profile
+r2mod imp(ort) ProfileCode: Install r2modman mod profile
 r2mod ins(tall) Thunderstore-Dependency-String: Install New Mod
 r2mod li(st): List Installed Mods
 r2mod ref(resh): Force Refresh Package Cache
