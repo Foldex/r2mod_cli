@@ -80,6 +80,7 @@ r2mod ins(tall) Thunderstore-Dependency-String: Install New Mod
 r2mod li(st): List Installed Mods
 r2mod ref(resh): Force Refresh Package Cache
 r2mod run: Launch Risk of Rain
+r2mod sea(rch): Search for Mods
 r2mod set(up): Install a Fresh BepInEx Setup
 r2mod un(install) Thunderstore-Dependency-String: Uninstall Mod
 r2mod upd(ate): Update All Exisiting Mods
@@ -133,6 +134,10 @@ All Files, Old Versions, and Backups can be found in `/tmp/r2mod`
 - Resolve and Install Dependencies for mods.
 
 ## Changelog
+
+### 1.0.5
+
+- Add Search Command
 
 ### 1.0.4
 

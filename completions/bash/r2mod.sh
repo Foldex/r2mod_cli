@@ -6,7 +6,7 @@ _r2mod()
 	local cur prev commands R2_DIR CONFIG_DIR PLUGINS_DIR TMP_DIR
 	cur="${COMP_WORDS[COMP_CWORD]}"
 	prev="${COMP_WORDS[COMP_CWORD-1]}"
-	commands="check disable edit enable export hold import install list refresh run setup uninstall update version"
+	commands="check disable edit enable export hold import install list refresh run search setup uninstall update version"
 
 	if [[ -n "$R2MOD_INSTALL_DIR" ]]; then
 		# Custom install location

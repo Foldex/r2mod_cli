@@ -56,6 +56,7 @@ function help {
 	r2mod li(st): List Installed Mods
 	r2mod ref(resh): Force Refresh Package Cache
 	r2mod run: Launch Risk of Rain
+	r2mod sea(rch): Search for Mods
 	r2mod set(up): Install a Fresh BepInEx Setup
 	r2mod un(install) Thunderstore-Dependency-String: Uninstall Mod
 	r2mod upd(ate): Update All Exisiting Mods
@@ -224,6 +225,21 @@ function get_pkgs {
 		fatal_error "Package Cache DL Incomplete"
 	fi
 
+}
+
+function search_pkgs {
+	local RESULT
+	local name
+	local desc
+
+	[[ -z "$1" ]] && fatal_error "No Search Passed"
+	cecho b "Searching..."
+
+    RESULT=$(jq -r -e --arg SEARCH "$1" '.[].versions[0] | select(.full_name + .description|test($SEARCH; "i")) | .full_name + "\t" + .description' "$API_FILE") || fatal_error "Failed to find $1"
+
+	while IFS=$'\t' read -r name desc; do
+		echo -e "\e[34m$name\n  \e[0m$desc"
+	done <<< "$RESULT"
 }
 
 function version_gt() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; }
@@ -696,6 +712,7 @@ case $1 in
     li*)  ls -1 --color=always --group-directories-first "$PLUGINS_DIR";;
     ref*) get_pkgs 1;;
     run) launch_game;;
+    sea*) get_pkgs && search_pkgs "$2";;
     set*) [[ -z "$SETUP_COMPLETE" ]] && setup_bepin;;
     un*)  uninstall_mult_mods "${@:2}";;
     upd*) update_mods;;
