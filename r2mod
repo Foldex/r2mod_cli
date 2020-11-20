@@ -19,6 +19,14 @@ else
 	R2_DIR="$HOME/.local/share/Steam/steamapps/common/Risk of Rain 2"
 fi
 
+if [[ -d "$HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/compatdata/632360" ]]; then
+    # Flatpak
+	R2_COMPAT="$HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/compatdata/632360"
+else
+	# Default
+	R2_COMPAT="$HOME/.local/share/Steam/steamapps/compatdata/632360"
+fi
+
 BEPIN_DIR="$R2_DIR/BepInEx"
 CONFIG_DIR="$BEPIN_DIR/config"
 PLUGINS_DIR="$BEPIN_DIR/plugins"
@@ -545,7 +553,9 @@ function setup_bepin {
 			mkdir -p "$TMP_DIR/old"
 			mv "$BEPIN_DIR" "$TMP_DIR/old/BepInEx-$(date +%F_%T)" || fatal_error "Failed to Backup Old Install"
 		fi
-
+		if [[ $(cat $R2_COMPAT/pfx/user.reg|grep "winhttp"|wc -m) -gt 1 ]]; then
+		sed -i '/\[Software\\\\Wine\\\\DllOverrides\].*/a \"winhttp\"=\"native,builtin\"' $R2_COMPAT/pfx/user.reg
+		fi
 		get_pkgs
 		install_mod "bbepis-BepInExPack"
 		cecho g "Installed BepInEx" 1
