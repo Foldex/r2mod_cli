@@ -714,7 +714,7 @@ case $1 in
     run) launch_game;;
     sea*) get_pkgs && search_pkgs "$2";;
     set*) [[ -z "$SETUP_COMPLETE" ]] && setup_bepin;;
-    un*)  uninstall_mult_mods "${@:2}";;
+    un* | rem*) uninstall_mult_mods "${@:2}";;
     upd*) update_mods;;
     ver*) echo "$VERSION";;
 	*) [[ -z "$SETUP_COMPLETE" ]] && help;;

@@ -40,6 +40,7 @@ _r2mod ()
 				'install:Install New Mod'
 				'list:List Installed Mods'
 				'refresh:Force Refresh Package Cache'
+				'remove:Uninstall a mod'
 				'run:Launch Risk of Rain'
 				'search:Search for Mods'
 				'setup:Install a Fresh BepInEx Setup'
@@ -68,7 +69,7 @@ _r2mod ()
 					_files -W "$TMP_DIR/profile" -F "( config new *.* *_* )" -/
 					;;
 
-				un | uninstall | hol | hold)
+				un | uninstall | hol | hold | rem | remove)
 					[[ ! -d "$PLUGINS_DIR" ]] && return 1
 					_files -W "$PLUGINS_DIR" -F "( *R2API* bbepis-BepInExPack-* )" -/
 					;;
