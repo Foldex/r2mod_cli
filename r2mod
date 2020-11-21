@@ -553,7 +553,7 @@ function setup_bepin {
 			mkdir -p "$TMP_DIR/old"
 			mv "$BEPIN_DIR" "$TMP_DIR/old/BepInEx-$(date +%F_%T)" || fatal_error "Failed to Backup Old Install"
 		fi
-		if [[ $(cat $R2_COMPAT/pfx/user.reg|grep "winhttp"|wc -m) -eq 0 ]]; then
+		if ! grep -q "winhttp" "$R2_COMPAT/pfx/user.reg"; then
 		sed -i '/\[Software\\\\Wine\\\\DllOverrides\].*/a \"winhttp\"=\"native,builtin\"' $R2_COMPAT/pfx/user.reg
 		fi
 		get_pkgs
