@@ -30,6 +30,7 @@ _r2mod ()
 
 			local -a subcommands
 			subcommands=(
+				'add:Install New Mod'
 				'check:Check for Script Updates'
 				'disable:Disable All Mods'
 				'edit:Edit Mod Configs'
