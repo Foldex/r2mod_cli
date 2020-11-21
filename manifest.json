@@ -1,6 +1,6 @@
 {
     "name": "r2mod_cli",
-    "version_number": "1.0.4",
+    "version_number": "1.0.5",
     "website_url": "https://github.com/foldex/r2mod_cli",
     "description": "A simple CLI Mod Manager for Linux",
     "dependencies": []
