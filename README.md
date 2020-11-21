@@ -22,11 +22,7 @@ A simple mod manager written in Bash for Linux users.
 
 ## Requirements
 
-In order to get mods working you will need to set up your Proton prefix to properly load BepInEx:
-
-[Guide](https://github.com/risk-of-thunder/R2Wiki/wiki/Getting-BepInEx-Console-Working-on-Linux)
-
-The following programs should also be installed:
+The following programs should be installed:
 
 ### Arch
 
