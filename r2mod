@@ -708,7 +708,7 @@ case $1 in
     exp*) profile_export "$2";;
     hol*) toggle_hold "$2";;
     imp*) profile_import "$2" "$3" ;;
-    ins*) get_pkgs && install_mult_mods "${@:2}";;
+    ins* | add) get_pkgs && install_mult_mods "${@:2}";;
     li*)  ls -1 --color=always --group-directories-first "$PLUGINS_DIR";;
     ref*) get_pkgs 1;;
     run) launch_game;;
