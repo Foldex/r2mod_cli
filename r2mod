@@ -116,7 +116,7 @@ function sanity_check {
 	ERROR=0
 
 	# Check Script Dependencies
-	declare script_deps=( 7z awk base64 curl date jq sed wc )
+	declare script_deps=( 7z awk base64 curl date grep jq sed wc )
 	for i in "${script_deps[@]}"; do
 		if ! type -P "$i" > /dev/null; then
 			error "$i is missing from PATH."
