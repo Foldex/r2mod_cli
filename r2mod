@@ -6,25 +6,29 @@
 #############################
 
 VERSION="1.0.4"
+STEAM_ID="632360"
 
 # Dirs
+STEAM_DIR=".local/share/Steam"
+FLATPAK_DIR=".var/app/com.valvesoftware.Steam/$STEAM_DIR"
+
 if [[ -n "$R2MOD_INSTALL_DIR" ]]; then
 	# Custom install location
 	R2_DIR="$R2MOD_INSTALL_DIR"
-elif [[ -d "$HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/common/Risk of Rain 2" ]]; then
+elif [[ -d "$HOME/$FLATPAK_DIR/steamapps/common/Risk of Rain 2" ]]; then
     # Flatpak install
-	R2_DIR="$HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/common/Risk of Rain 2"
+	R2_DIR="$HOME/$FLATPAK_DIR/steamapps/common/Risk of Rain 2"
 else
 	# Default
-	R2_DIR="$HOME/.local/share/Steam/steamapps/common/Risk of Rain 2"
+	R2_DIR="$HOME/$STEAM_DIR/steamapps/common/Risk of Rain 2"
 fi
 
-if [[ -d "$HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/compatdata/632360" ]]; then
-    # Flatpak
-	R2_COMPAT="$HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/compatdata/632360"
+if [[ -d "$HOME/$FLATPAK_DIR/steamapps/compatdata/$STEAM_ID" ]]; then
+	# Flatpak
+	R2_COMPAT="$HOME/$FLATPAK_DIR/steamapps/compatdata/$STEAM_ID"
 else
 	# Default
-	R2_COMPAT="$HOME/.local/share/Steam/steamapps/compatdata/632360"
+	R2_COMPAT="$HOME/$STEAM_DIR/steamapps/compatdata/$STEAM_ID"
 fi
 
 BEPIN_DIR="$R2_DIR/BepInEx"
@@ -178,7 +182,7 @@ function launch_game {
 
 	cecho b "Running Risk of Rain..."
 	# shellcheck disable=SC2086
-	$steam_cmd -applaunch 632360 > /dev/null 2>&1 &
+	$steam_cmd -applaunch $STEAM_ID > /dev/null 2>&1 &
 	disown
 }
 
@@ -553,9 +557,12 @@ function setup_bepin {
 			mkdir -p "$TMP_DIR/old"
 			mv "$BEPIN_DIR" "$TMP_DIR/old/BepInEx-$(date +%F_%T)" || fatal_error "Failed to Backup Old Install"
 		fi
+
 		if ! grep -q "winhttp" "$R2_COMPAT/pfx/user.reg"; then
-		sed -i '/\[Software\\\\Wine\\\\DllOverrides\].*/a \"winhttp\"=\"native,builtin\"' $R2_COMPAT/pfx/user.reg
+			cecho b "Overriding winhttp dll..."
+			sed -i '/\[Software\\\\Wine\\\\DllOverrides\].*/a \"winhttp\"=\"native,builtin\"' "$R2_COMPAT/pfx/user.reg"
 		fi
+
 		get_pkgs
 		install_mod "bbepis-BepInExPack"
 		cecho g "Installed BepInEx" 1
@@ -717,7 +724,7 @@ case $1 in
     en*)  toggle_mods 1;;
     exp*) profile_export "$2";;
     hol*) toggle_hold "$2";;
-    imp*) profile_import "$2" "$3" ;;
+    imp*) profile_import "$2" "$3";;
     ins*) get_pkgs && install_mult_mods "${@:2}";;
     li*)  ls -1 --color=always --group-directories-first "$PLUGINS_DIR";;
     ref*) get_pkgs 1;;
