@@ -134,6 +134,8 @@ All Files, Old Versions, and Backups can be found in `/tmp/r2mod`
 ### 1.0.5
 
 - Add Search Command
+- Alias `remove` for uninstall
+- Automatically override winhttp on setup (bgkillas)
 
 ### 1.0.4
 
