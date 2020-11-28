@@ -347,6 +347,15 @@ function dl_mod {
 			return
 		fi
 
+		# Workaround for improper extractions flattening dir structure
+		# and leaving Windows illegal "\" in filenames
+		# Replace "\" with "/" and remake the original dir structure
+		for i in "$API_DIR/"/*\\*; do
+			fixed_filename="${i//\\//}"
+			mkdir -p  "${fixed_filename%/*}"
+			mv "$i" "$fixed_filename"
+		done
+
 		cp -r -n "$API_DIR" "$PLUGINS_DIR" || fatal_error "Failed to copy $API_DIR into $PLUGINS_DIR"
 
 		# LighterPatcher support
