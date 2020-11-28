@@ -350,7 +350,10 @@ function dl_mod {
 		# Workaround for improper extractions flattening dir structure
 		# and leaving Windows illegal "\" in filenames
 		# Replace "\" with "/" and remake the original dir structure
-		for i in "$API_DIR/"/*\\*; do
+		local illegal_files=()
+		mapfile -t illegal_files < <(compgen -G "$API_DIR/*\\\*")
+
+		for i in "${illegal_files[@]}"; do
 			fixed_filename="${i//\\//}"
 			mkdir -p  "${fixed_filename%/*}"
 			mv "$i" "$fixed_filename"
