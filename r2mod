@@ -588,6 +588,9 @@ function setup_bepin {
 		# setup can run as part of a sanity check, and then as the "setup" command arg
 		# setting this avoids doubling up on setup when you only want to do it once
 		SETUP_COMPLETE=1
+	else
+		cecho p "Setup Cancelled"
+		exit 0
 	fi
 
 }
