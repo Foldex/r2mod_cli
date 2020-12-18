@@ -267,16 +267,18 @@ function install_core() {
 			cd "$R2_DIR" || fatal_error "Failed to CD to R2 Dir"
 
 			# Copy Cached BepIn to an intermediate dir so we can copy files to it without messing up the cached ver
-			mkdir -p "$TMP_DIR/tmp" || fatal_error "Failed to make tmp dir"
-			cp -r "$3/BePinExPack/" "$TMP_DIR/tmp" || fatal_error "Failed to copy temporary BepInEx "
+			local TMP_BEPIN="$TMP_DIR/tmp/$2"
+			mkdir -p "$TMP_BEPIN" || fatal_error "Failed to make tmp dir"
+			cp -r "$3/BepInExPack/" "$TMP_BEPIN" || fatal_error "Failed to copy temporary BepInEx "
 
-			cp -r "$CONFIG_DIR" "$TMP_DIR/tmp/$2/BepInExPack/BepInEx" || fatal_error "Failed to copy Config Files"
-			cp -r "$PLUGINS_DIR" "$TMP_DIR/tmp/$2/BepInExPack/BepInEx" || fatal_error "Failed to copy Plugins"
+			cp -r "$CONFIG_DIR" "$TMP_BEPIN/BepInExPack/BepInEx" || fatal_error "Failed to copy Config Files"
+			cp -r "$PLUGINS_DIR" "$TMP_BEPIN/BepInExPack/BepInEx" || fatal_error "Failed to copy Plugins"
 
 			cecho b "Backing Up Old Install..." 1
+			mkdir -p "$TMP_DIR/old"
 			mv "$BEPIN_DIR" "$TMP_DIR/old/BepInEx-$(date +%F_%T)" || fatal_error "Failed to Backup Old BepInEx Folder"
-			mv "$TMP_DIR/tmp/$2/BepInExPack/"* "$R2_DIR" || fatal_error "Failed to Install New BepInEx Folder"
-			rm -rf "$TMP_DIR/tmp/$2"
+			mv "$TMP_BEPIN/BepInExPack/"* "$R2_DIR" || fatal_error "Failed to Install New BepInEx Folder"
+			rm -rf "$TMP_BEPIN"
 		else
 			# Just copy the cached version
 			cp -r -f "$3/BepInExPack/"* "$R2_DIR" || fatal_error "Failed to Install New BepInEx Folder"
