@@ -128,15 +128,19 @@ function sanity_check {
 	fi
 
 	# Check File Paths
-	[ ! -d "$R2_DIR" ] && cecho r "$R2_DIR" && fatal_error "Risk of Rain 2 Folder Not Found"
-	[ ! -d "$R2_DIR/BepInEx" ] && cecho r "BepInEx Folder Not Found" && setup_bepin
-	[ ! -f "$R2_DIR/winhttp.dll" ] && error "winhttp.dll Missing"
-	[ ! -f "$R2_DIR/doorstop_config.ini" ] && error "doorstop_config.ini Missing"
+	[[ ! -d "$R2_DIR" ]] && cecho r "$R2_DIR" && fatal_error "Risk of Rain 2 Folder Not Found"
+
+	[[ ! -d "$R2_DIR/BepInEx" ]] && cecho r "BepInEx Folder Not Found" && setup_bepin
+	[[ ! -f "$R2_DIR/winhttp.dll" && -z "$SETUP_COMPLETE" ]] && cecho r "winhttp.dll Missing, Broken BepInEx Install" && setup_bepin
+	[[ ! -f "$R2_DIR/doorstop_config.ini" && -z "$SETUP_COMPLETE" ]] && cecho r "doorstop_config.ini Missing, Broken BepInEx Install" && setup_bepin
 
 	cd "$R2_DIR" || fatal_error "Failed to CD to R2 Dir"
 
-	if [[ "$ERROR" == 1 ]]; then
-		fatal_error "Missing File Paths"
+	# Double Check After Setup
+	if [[ "$SETUP_COMPLETE" == 1 ]]; then
+		[[ ! -d "$R2_DIR/BepInEx" ]] && fatal_error "BepInEx Folder Not Found, Setup Failed"
+		[[ ! -f "$R2_DIR/winhttp.dll" ]] && fatal_error "winhttp.dll Missing, Setup Failed"
+		[[ ! -f "$R2_DIR/doorstop_config.ini" ]] && fatal_error "doorstop_config.ini Missing, Setup Failed"
 	fi
 }
 
