@@ -49,6 +49,10 @@ _r2mod()
 				COMPREPLY=( $(cd "$TMP_DIR/profile" && compgen -f -X "@(*[._]*|config|new)" -- "$cur") )
 				return 0
 				;;
+			li | list)
+				COMPREPLY=( "count" )
+				return 0
+				;;
 			un | uninstall | hol | hold | rem | remove)
 				[[ ! -d "$PLUGINS_DIR" ]] && return 1
 				COMPREPLY=( $(cd "$PLUGINS_DIR" && compgen -d -X "@(*R2API*|bbepis-BepInExPack-*)" -- "$cur") )
