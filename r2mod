@@ -260,6 +260,14 @@ function search_pkgs {
 
 function version_gt() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; }
 
+function list_installed {
+	if [[ "$1" =~ ^c(ount)?$ ]]; then
+		ls "$PLUGINS_DIR" | wc -l
+	else
+		ls -1 --color=auto --group-directories-first "$PLUGINS_DIR"
+	fi
+}
+
 function install_core() {
 	if [[ "$1" == "bbepis-BepInExPack" ]]; then
 
@@ -747,8 +755,7 @@ case $1 in
     hol*) toggle_hold "$2";;
     imp*) profile_import "$2" "$3";;
     ins*) get_pkgs && install_mult_mods "${@:2}";;
-    li*)  ls -1 --color=auto --group-directories-first "$PLUGINS_DIR";;
-    num*) ls "$PLUGINS_DIR" | wc -l;;
+    li*)  list_installed "$2";;
     ref*) get_pkgs 1;;
     run) launch_game;;
     sea*) get_pkgs && search_pkgs "$2";;
