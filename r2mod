@@ -747,8 +747,8 @@ case $1 in
     hol*) toggle_hold "$2";;
     imp*) profile_import "$2" "$3";;
     ins*) get_pkgs && install_mult_mods "${@:2}";;
-    li*)  ls -1 --color=always --group-directories-first "$PLUGINS_DIR";;
-	num*) ls "$PLUGINS_DIR" | wc -l;;
+    li*)  ls -1 --color=auto --group-directories-first "$PLUGINS_DIR";;
+    num*) ls "$PLUGINS_DIR" | wc -l;;
     ref*) get_pkgs 1;;
     run) launch_game;;
     sea*) get_pkgs && search_pkgs "$2";;
