@@ -73,8 +73,7 @@ r2mod exp(ort) ProfileName: Export r2modman mod profile
 r2mod hol(d): Toggle Mod Updates
 r2mod imp(ort) ProfileCode: Install r2modman mod profile
 r2mod ins(tall) Thunderstore-Dependency-String: Install New Mod
-r2mod li(st): List Installed Mods
-r2mod num(ber): Show Number Of Mods Installed
+r2mod li(st) (count): List or Count Installed Mods
 r2mod ref(resh): Force Refresh Package Cache
 r2mod run: Launch Risk of Rain
 r2mod sea(rch): Search for Mods
