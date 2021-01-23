@@ -66,6 +66,7 @@ function help {
 	r2mod imp(ort) ProfileCode: Install r2modman mod profile
 	r2mod ins(tall) Thunderstore-Dependency-String: Install New Mod
 	r2mod li(st): List Installed Mods
+	r2mod num(ber): Show Number Of Mods Installed
 	r2mod ref(resh): Force Refresh Package Cache
 	r2mod run: Launch Risk of Rain
 	r2mod sea(rch): Search for Mods
@@ -747,6 +748,7 @@ case $1 in
     imp*) profile_import "$2" "$3";;
     ins*) get_pkgs && install_mult_mods "${@:2}";;
     li*)  ls -1 --color=auto --group-directories-first "$PLUGINS_DIR";;
+    num*) ls "$PLUGINS_DIR" | wc -l;;
     ref*) get_pkgs 1;;
     run) launch_game;;
     sea*) get_pkgs && search_pkgs "$2";;
