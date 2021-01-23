@@ -258,7 +258,7 @@ function search_pkgs {
 	done <<< "$RESULT"
 }
 
-function version_gt() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; }
+function version_gt { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; }
 
 function list_installed {
 	if [[ "$1" =~ ^c(ount)?$ ]]; then
@@ -268,7 +268,7 @@ function list_installed {
 	fi
 }
 
-function install_core() {
+function install_core {
 	if [[ "$1" == "bbepis-BepInExPack" ]]; then
 
 		if [[ -d "$BEPIN_DIR" ]]; then
@@ -757,7 +757,7 @@ case $1 in
     ins*) get_pkgs && install_mult_mods "${@:2}";;
     li*)  list_installed "$2";;
     ref*) get_pkgs 1;;
-    run) launch_game;;
+    run)  launch_game;;
     sea*) get_pkgs && search_pkgs "$2";;
     set*) [[ -z "$SETUP_COMPLETE" ]] && setup_bepin;;
     un* | rem*) uninstall_mult_mods "${@:2}";;
