@@ -755,7 +755,7 @@ case $1 in
     hol*) toggle_hold "$2";;
     imp*) profile_import "$2" "$3";;
     ins*) get_pkgs && install_mult_mods "${@:2}";;
-    li*)  list_installed "$2";;
+    li* | ls) list_installed "$2";;
     ref*) get_pkgs 1;;
     run)  launch_game;;
     sea*) get_pkgs && search_pkgs "$2";;

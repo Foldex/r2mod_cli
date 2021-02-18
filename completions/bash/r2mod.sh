@@ -49,7 +49,7 @@ _r2mod()
 				COMPREPLY=( $(cd "$TMP_DIR/profile" && compgen -f -X "@(*[._]*|config|new)" -- "$cur") )
 				return 0
 				;;
-			li | list)
+			li | list | ls)
 				COMPREPLY=( "count" )
 				return 0
 				;;
