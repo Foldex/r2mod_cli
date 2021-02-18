@@ -131,6 +131,14 @@ All Files, Old Versions, and Backups can be found in `/tmp/r2mod`
 
 ## Changelog
 
+### 1.0.6
+
+- Fix some mods zips extracting without folders
+- Improved setup logic
+- `list` now uses color=auto
+- Added `list count` command
+- Added `ls` alias
+
 ### 1.0.5
 
 - Add Search Command
