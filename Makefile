@@ -1,9 +1,14 @@
-.PHONY: install
+.PHONY: install bin completions
+
 PREFIX = /usr
 
-install:
+install: bin completions
+
+bin:
 	install -d "${DESTDIR}${PREFIX}/bin"
 	install -m 755 r2mod "${DESTDIR}${PREFIX}/bin/r2mod"
+
+completions:
 	install -d "${DESTDIR}${PREFIX}/share/bash-completion/completions"
 	install -m 644 "completions/bash/r2mod.sh" "${DESTDIR}${PREFIX}/share/bash-completion/completions/r2mod"
 	install -d "${DESTDIR}${PREFIX}/share/zsh/site-functions/"
