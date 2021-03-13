@@ -63,6 +63,17 @@ _r2mod()
 		esac
 	fi
 
+	if [ $COMP_CWORD == 3 ]
+	then
+		case "${COMP_WORDS[1]}" in
+			imp | import)
+				COMPREPLY=( "preview" )
+				return 0
+				;;
+			*)
+				;;
+		esac
+	fi
 }
 
 complete -F _r2mod r2mod

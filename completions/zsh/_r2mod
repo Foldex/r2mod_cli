@@ -65,8 +65,18 @@ _r2mod ()
 					;;
 
 				imp | import)
-					[[ ! -d "$TMP_DIR/profile" ]] && return 1
-					_files -W "$TMP_DIR/profile" -F "( config new *.* *_* )" -/
+					case $line[2] in
+						"")
+							[[ ! -d "$TMP_DIR/profile" ]] && return 1
+							_files -W "$TMP_DIR/profile" -F "( config new *.* *_* )" -/
+							;;
+
+						*)
+							local args=( "preview" )
+							[[ ${args[*]} == "$line[3]" ]] && return 1
+							compadd -a args
+							;;
+					esac
 					;;
 
 				li | list | ls)
@@ -80,9 +90,9 @@ _r2mod ()
 					_files -W "$PLUGINS_DIR" -F "( *R2API* bbepis-BepInExPack-* )" -/
 					;;
 
-				esac
-				;;
-		esac
+			esac
+			;;
+	esac
 	}
 
 _r2mod "$@"
