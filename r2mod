@@ -148,6 +148,7 @@ function sanity_check {
 function update_check {
 
 	[[ "$1" != 1 ]] && get_pkgs
+	[[ -n "$UPDATE_CHECK_COMPLETE" ]] && return
 
 	local API_JSON
 	local API_VER
@@ -161,6 +162,9 @@ function update_check {
 	else
 		cecho g "R2Mod Up to Date"
 	fi
+
+	# Avoids running a second update check if one already ran
+	UPDATE_CHECK_COMPLETE=1
 }
 
 function launch_game {
