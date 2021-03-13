@@ -381,9 +381,15 @@ function dl_mod {
 		cp -r -n "$API_DIR" "$PLUGINS_DIR" || fatal_error "Failed to copy $API_DIR into $PLUGINS_DIR"
 
 		# LighterPatcher support
-		if [[ -d "$PLUGINS_DIR/$MOD_FULL_NAME-$MOD_VER/BepInEx/patchers" ]]; then
+		local patcher_files=()
+		mapfile -t patcher_files < <(compgen -G "$PLUGINS_DIR/$MOD_FULL_NAME-$API_VER/BepInEx/patchers/*")
+
+		if [[ "${#patcher_files[@]}" -gt 0 ]]; then
 			cecho b "Moving Patcher Files..." 1
-			mv "$PLUGINS_DIR/$MOD_FULL_NAME-$MOD_VER/BepInEx/patchers/"*.dll "$BEPIN_DIR/patchers" || fatal_error "Failed to Move Patcher dlls"
+
+			for i in "${patcher_files[@]}"; do
+				mv "$i" "$BEPIN_DIR/patchers" || fatal_error "Failed to move Patcher Files"
+			done
 		fi
 
 		# Backup Old Dir
