@@ -648,7 +648,7 @@ function profile_import {
 			}' "$TMP_DIR/profile/export.r2x" > "$TMP_DIR/profile/$1"
 	fi
 
-	if [[ "$2" == "preview" ]]; then
+	if [[ "$2" =~ ^[Pp](review)?$ ]]; then
 		cecho b "Previewing..."
 		cat "$TMP_DIR/profile/$1"
 		return
