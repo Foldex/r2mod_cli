@@ -3,9 +3,10 @@
 _r2mod()
 {
 	shopt -s extglob
-	local cur prev commands R2_DIR CONFIG_DIR PLUGINS_DIR TMP_DIR
+	local cur prev first commands R2_DIR CONFIG_DIR PLUGINS_DIR TMP_DIR
 	cur="${COMP_WORDS[COMP_CWORD]}"
 	prev="${COMP_WORDS[COMP_CWORD-1]}"
+	first="${COMP_WORDS[1]}"
 	commands="check disable edit enable export hold import install list refresh remove run search setup uninstall update version"
 
 	if [[ -n "$R2MOD_INSTALL_DIR" ]]; then
@@ -24,56 +25,59 @@ _r2mod()
 	PLUGINS_DIR="$BEPIN_DIR/plugins"
 	TMP_DIR="/tmp/r2mod"
 
-	if [ $COMP_CWORD == 1 ]
-	then
-		COMPREPLY=($(compgen -W "${commands}" -- ${cur}))
-		return 0
-	fi
+	case "$COMP_CWORD" in
+		1)
+			COMPREPLY=($(compgen -W "${commands}" -- ${cur}))
+			return 0
+			;;
 
-	if [ $COMP_CWORD == 2 ]
-	then
-		case "$prev" in
-			ed | edit)
-				[[ ! -d "$CONFIG_DIR" ]] && return 1
-				COMPREPLY=( $(cd "$CONFIG_DIR" && compgen -f -- "$cur") )
-				return 0
-				;;
-			ins | install)
-				[[ ! -f "$TMP_DIR/comp_cache" ]] && return 1
-				local mods=$(cat "$TMP_DIR/comp_cache" | tr '\n' ' ')
-				COMPREPLY=( $(compgen -W "$mods" -- "$cur" ) )
-				return 0
-				;;
-			imp | import)
-				[[ ! -d "$TMP_DIR/profile" ]] && return 1
-				COMPREPLY=( $(cd "$TMP_DIR/profile" && compgen -f -X "@(*[._]*|config|new)" -- "$cur") )
-				return 0
-				;;
-			li | list | ls)
-				COMPREPLY=( "count" )
-				return 0
-				;;
-			un | uninstall | hol | hold | rem | remove)
-				[[ ! -d "$PLUGINS_DIR" ]] && return 1
-				COMPREPLY=( $(cd "$PLUGINS_DIR" && compgen -d -X "@(*R2API*|bbepis-BepInExPack-*)" -- "$cur") )
-				return 0
-				;;
-			*)
-				;;
-		esac
-	fi
+		2)
+			case "$prev" in
+				ed | edit)
+					[[ ! -d "$CONFIG_DIR" ]] && return 1
+					COMPREPLY=( $(cd "$CONFIG_DIR" && compgen -f -- "$cur") )
+					return 0
+					;;
+				ins | install)
+					[[ ! -f "$TMP_DIR/comp_cache" ]] && return 1
+					local mods=$(cat "$TMP_DIR/comp_cache" | tr '\n' ' ')
+					COMPREPLY=( $(compgen -W "$mods" -- "$cur" ) )
+					return 0
+					;;
+				imp | import)
+					[[ ! -d "$TMP_DIR/profile" ]] && return 1
+					COMPREPLY=( $(cd "$TMP_DIR/profile" && compgen -f -X "@(*[._]*|config|new)" -- "$cur") )
+					return 0
+					;;
+				li | list | ls)
+					COMPREPLY=( "count" )
+					return 0
+					;;
+				un | uninstall | hol | hold | rem | remove)
+					[[ ! -d "$PLUGINS_DIR" ]] && return 1
+					COMPREPLY=( $(cd "$PLUGINS_DIR" && compgen -d -X "@(*R2API*|bbepis-BepInExPack-*)" -- "$cur") )
+					return 0
+					;;
+				*)
+					;;
+			esac
+			;;
 
-	if [ $COMP_CWORD == 3 ]
-	then
-		case "${COMP_WORDS[1]}" in
-			imp | import)
-				COMPREPLY=( "preview" )
-				return 0
-				;;
-			*)
-				;;
-		esac
-	fi
+		3)
+			case "$first" in
+				imp | import)
+					COMPREPLY=( "preview" )
+					return 0
+					;;
+				*)
+					;;
+			esac
+			;;
+
+		*)
+			return 1
+			;;
+	esac
 }
 
 complete -F _r2mod r2mod
