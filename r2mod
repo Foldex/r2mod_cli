@@ -304,7 +304,19 @@ function install_core {
 
 	if [[ "$1" == "tristanmcpherson-R2API" ]]; then
 		cecho b "Copying R2API Files..." 1
-		cp -r -f "$3/monomod" "$BEPIN_DIR" || fatal_error "Failed to install R2API monomod folder"
+
+		if [[ -d "$3/patchers" ]]; then
+			# R2API v3
+			cp -r -f "$3/patchers" "$BEPIN_DIR" || fatal_error "Failed to install R2API patchers folder"
+			# remove v2 monomod
+			[[ -f "$BEPIN_DIR/monomod/Assembly-CSharp.R2API.mm.dll" ]] && rm "$BEPIN_DIR/monomod/Assembly-CSharp.R2API.mm.dll"
+		elif [[ -d "$3/monomod" ]]; then
+			# R2API v2 : TODO Should remove when mods update to R2API v3
+			cp -r -f "$3/monomod" "$BEPIN_DIR" || fatal_error "Failed to install R2API monomod folder"
+			# remove v3 patcher
+			[[ -f "$BEPIN_DIR/patchers/R2API.Patcher.dll" ]] && rm "$BEPIN_DIR/patchers/R2API.Patcher.dll"
+		fi
+
 		cp -r -f "$3/plugins" "$BEPIN_DIR" || fatal_error "Failed to install R2API plugins folder"
 	fi
 
