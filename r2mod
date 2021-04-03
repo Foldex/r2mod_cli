@@ -23,7 +23,10 @@ else
 	R2_DIR="$HOME/$STEAM_DIR/steamapps/common/Risk of Rain 2"
 fi
 
-if [[ -d "$HOME/$FLATPAK_DIR/steamapps/compatdata/$STEAM_ID" ]]; then
+if [[ -n "$R2MOD_COMPAT_DIR" ]]; then
+	# Custom install location
+	R2_COMPAT="$R2MOD_COMPAT_DIR"
+elif [[ -d "$HOME/$FLATPAK_DIR/steamapps/compatdata/$STEAM_ID" ]]; then
 	# Flatpak
 	R2_COMPAT="$HOME/$FLATPAK_DIR/steamapps/compatdata/$STEAM_ID"
 else
