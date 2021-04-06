@@ -131,6 +131,13 @@ All Files, Old Versions, and Backups can be found in `/tmp/r2mod`
 
 ## Changelog
 
+### 1.0.7
+- Support R2API v3
+- Allow Custom Steam Compat Dir
+- Add Completion for `import preview`
+- Fix mod installs with patchers
+- Avoid running update check twice
+
 ### 1.0.6
 
 - Fix some mods zips extracting without folders
