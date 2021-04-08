@@ -296,6 +296,8 @@ function list_installed {
 	fi
 }
 
+function is_core_mod { [[ "$1" =~ ^(bbepis-BepInExPack|tristanmcpherson-R2API)/?$ ]]; }
+
 function install_core {
 	if [[ "$1" == "bbepis-BepInExPack" ]]; then
 
@@ -403,7 +405,7 @@ function dl_mod {
 		fi
 
 		# BepInEx and R2API Require Special Installs
-		if [[ "$MOD_FULL_NAME" =~ ^(bbepis-BepInExPack|tristanmcpherson-R2API)$ ]]; then
+		if is_core_mod "$MOD_FULL_NAME"; then
 			install_core "$MOD_FULL_NAME" "$API_FILENAME" "$API_DIR"
 			return
 		fi
@@ -510,7 +512,7 @@ function uninstall_mod {
 		fatal_error "$1 is not a Valid Mod Name"
 	fi
 
-	if [[ "$author-$name" =~ ^(bbepis-BepInExPack|tristanmcpherson-R2API)$ ]]; then
+	if is_core_mod "$author-$name"; then
 		fatal_error "Trying to remove a core mod"
 	fi
 
@@ -625,7 +627,7 @@ function toggle_mod {
 	local enable="$1"
 	local mod="$2"
 
-	if [[ "$mod" =~ ^(bbepis-BepInExPack|tristanmcpherson-R2API)/? ]]; then
+	if is_core_mod "$mod"; then
 		fatal_error "Trying to toggle a core mod"
 	fi
 
