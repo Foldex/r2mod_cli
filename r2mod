@@ -37,6 +37,7 @@ fi
 BEPIN_DIR="$R2_DIR/BepInEx"
 CONFIG_DIR="$BEPIN_DIR/config"
 PLUGINS_DIR="$BEPIN_DIR/plugins"
+PLUGINS_DISABLED_DIR="$BEPIN_DIR/plugins_disabled"
 TMP_DIR="/tmp/r2mod"
 
 # Regex
@@ -140,6 +141,8 @@ function sanity_check {
 
 	cd "$R2_DIR" || fatal_error "Failed to CD to R2 Dir"
 
+	[[ -d "$R2_DIR/BepInEx" && ! -d "$PLUGINS_DISABLED_DIR" ]] && mkdir -p "$PLUGINS_DISABLED_DIR"
+
 	# Double Check After Setup
 	if [[ "$SETUP_COMPLETE" == 1 ]]; then
 		[[ ! -d "$R2_DIR/BepInEx" ]] && fatal_error "BepInEx Folder Not Found, Setup Failed"
@@ -184,9 +187,9 @@ function launch_game {
 	read -r input
 
 	if [[ "$input" == 1 ]]; then
-		toggle_mods 1
+		toggle_mult_mods 1
 	elif [[ "$input" == 2 ]]; then
-		toggle_mods 0
+		toggle_mult_mods 0
 	else
 		fatal_error "Invalid Selection"
 	fi
@@ -268,10 +271,28 @@ function search_pkgs {
 function version_gt { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; }
 
 function list_installed {
+	local list_all
+	[[ "${@: -1}" =~ ^a(ll)?$ ]] && list_all=1
+
+	# Count Plugins
 	if [[ "$1" =~ ^c(ount)?$ ]]; then
-		ls "$PLUGINS_DIR" | wc -l
+
+		if [[ -n "$list_all" ]]; then
+			cecho p "Enabled Plugins: $(ls "$PLUGINS_DIR" | wc -l)"
+			cecho p "Disabled Plugins: $(ls "$PLUGINS_DISABLED_DIR" | wc -l)"
+		else
+			ls "$PLUGINS_DIR" | wc -l
+		fi
 	else
+	# List Plugin Names
+		[[ -n "$list_all" ]] && cecho p "Enabled Plugins:"
 		ls -1 --color=auto --group-directories-first "$PLUGINS_DIR"
+
+		if [[ -n "$list_all" ]]; then
+			echo
+			cecho p "Disabled Plugins:"
+			ls -1 --color=auto --group-directories-first "$PLUGINS_DISABLED_DIR"
+		fi
 	fi
 }
 
@@ -335,7 +356,13 @@ function dl_mod {
 	local FORCE_INSTALL="$4"
 
 	# Don't try to install the exact same version
-	if [[ "$FORCE_INSTALL" == 1 && ( -d "$PLUGINS_DIR/$MOD_FULL_NAME-$MOD_VER" || -d "$PLUGINS_DIR/$MOD_FULL_NAME-$MOD_VER-HOLD" ) ]]; then
+	if [[ "$FORCE_INSTALL" == 1 && ( \
+		-d "$PLUGINS_DIR/$MOD_FULL_NAME-$MOD_VER" || \
+		-d "$PLUGINS_DIR/$MOD_FULL_NAME-$MOD_VER-HOLD" || \
+		-d "$PLUGINS_DISABLED_DIR/$MOD_FULL_NAME-$MOD_VER" || \
+		-d "$PLUGINS_DISABLED_DIR/$MOD_FULL_NAME-$MOD_VER-HOLD" \
+		) ]]; then
+
 	   cecho p "$MOD_NAME: Already installed" 1
 	   return
 	fi
@@ -393,7 +420,14 @@ function dl_mod {
 			mv "$i" "$fixed_filename"
 		done
 
-		cp -r -n "$API_DIR" "$PLUGINS_DIR" || fatal_error "Failed to copy $API_DIR into $PLUGINS_DIR"
+		# Handle Disabled Mods
+		local plugins_dir=$PLUGINS_DIR
+		if compgen -G "$PLUGINS_DISABLED_DIR/$MOD_FULL_NAME-*" > /dev/null; then
+			plugins_dir=$PLUGINS_DISABLED_DIR
+		fi
+
+		# Install Folder
+		cp -r -n "$API_DIR" "$plugins_dir" || fatal_error "Failed to copy $API_DIR into $plugins_dir"
 
 		# LighterPatcher support
 		local patcher_files=()
@@ -509,16 +543,22 @@ function uninstall_mult_mods {
 }
 
 function update_mods {
+	# $1: bool to update disabled mods
 
 	local author
 	local name
 	local version
 	local hold
 
-	get_pkgs
-	cecho b "Updating Mods..."
+	[[ -z "$1" ]] && get_pkgs
 
-	cd "$PLUGINS_DIR" || fatal_error "Cannot CD into $PLUGINS_DIR"
+	if [[ "$1" == "1" ]]; then
+		cecho b "Updating Disabled Mods..."
+		cd "$PLUGINS_DISABLED_DIR" || fatal_error "Cannot CD into $PLUGINS_DISABLED_DIR"
+	else
+		cecho b "Updating Mods..."
+		cd "$PLUGINS_DIR" || fatal_error "Cannot CD into $PLUGINS_DIR"
+	fi
 
 	for MOD_DIR in */; do
 
@@ -544,17 +584,68 @@ function update_mods {
 
 	done
 
-	cecho g "Finished Updating Mods"
+	if [[ -z "$1" ]] && [[ $(ls -A "$PLUGINS_DISABLED_DIR") ]]; then
+		update_mods 1
+	fi
+
+	[[ -z "$1" ]] && cecho g "Finished Updating Mods"
 }
 
-function toggle_mods {
-	if [[ "$1" == 1 ]]; then
-		sed -i -e 's/enabled=false/enabled=true/' "$R2_DIR/doorstop_config.ini" && cecho b "Mods Enabled"
-	elif [[ "$1" == 0 ]]; then
-		sed -i -e 's/enabled=true/enabled=false/' "$R2_DIR/doorstop_config.ini" && cecho b "Mods Disabled"
-	else
-		fatal_error "Improper toggle_mods argument $1"
+function toggle_mult_mods {
+	# $1: bool to disable or enable mods
+
+	[[ "$1" != 0 && "$1" != 1 ]] && fatal_error "toggle_mult_mods: Invalid first argument"
+
+	case "${@:2}" in
+		"")
+			# All Mods
+			case "$1" in
+				0)
+					sed -i -e 's/enabled=true/enabled=false/' "$R2_DIR/doorstop_config.ini" && cecho b "All Mods Disabled"
+					;;
+				1)
+					sed -i -e 's/enabled=false/enabled=true/' "$R2_DIR/doorstop_config.ini" && cecho b "All Mods Enabled"
+					;;
+				*)
+					fatal_error "toggle_mult_mods: Invalid first argument"
+					;;
+			esac
+			;;
+		*)
+			# Individual Mods
+			local mod
+			for mod in "${@:2}"; do
+				toggle_mod "$1" "$mod"
+			done
+			;;
+	esac
+}
+
+function toggle_mod {
+	local enable="$1"
+	local mod="$2"
+
+	if [[ "$mod" =~ ^(bbepis-BepInExPack|tristanmcpherson-R2API)/? ]]; then
+		fatal_error "Trying to toggle a core mod"
 	fi
+
+	[[ ! "$mod" =~ $MOD_FULL_REGEX ]] && fatal_error "Invalid Mod Passed"
+
+	case $enable in
+		0)
+			cecho b "Disabling: $mod"
+			[[ ! -d "$PLUGINS_DIR/$mod" ]] && fatal_error "$mod not found in plugins"
+			mv "$PLUGINS_DIR/$mod" "$PLUGINS_DISABLED_DIR" || fatal_error "Failed to move $mod to $PLUGINS_DISABLED_DIR"
+			;;
+		1)
+			cecho b "Enabling: $mod"
+			[[ ! -d "$PLUGINS_DISABLED_DIR/$mod" ]] && fatal_error "$mod not found in plugins_disabled"
+			mv "$PLUGINS_DISABLED_DIR/$mod" "$PLUGINS_DIR" || fatal_error "Failed to move $mod to $PLUGINS_DIR"
+			;;
+		*)
+			fatal_error "toggle_mod: Invalid first argument"
+			;;
+	esac
 }
 
 function toggle_hold {
@@ -773,14 +864,14 @@ sanity_check
 
 case $1 in
     ch*)  update_check;;
-    dis*) toggle_mods 0;;
+    dis*) toggle_mult_mods 0 "${@:2}";;
     ed*)  edit_configs "$2";;
-    en*)  toggle_mods 1;;
+    en*)  toggle_mult_mods 1 "${@:2}";;
     exp*) profile_export "$2";;
     hol*) toggle_hold "$2";;
     imp*) profile_import "$2" "$3";;
     ins*) get_pkgs && install_mult_mods "${@:2}";;
-    li* | ls) list_installed "$2";;
+    li* | ls) list_installed "${@:2}";;
     ref*) get_pkgs 1;;
     run)  launch_game;;
     sea*) get_pkgs && search_pkgs "$2";;
