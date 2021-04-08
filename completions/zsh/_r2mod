@@ -19,6 +19,7 @@ _r2mod ()
 	BEPIN_DIR="$R2_DIR/BepInEx"
 	CONFIG_DIR="$BEPIN_DIR/config"
 	PLUGINS_DIR="$BEPIN_DIR/plugins"
+	PLUGINS_DISABLED_DIR="$BEPIN_DIR/plugins_disabled"
 	TMP_DIR="/tmp/r2mod"
 
 	_arguments -C \
@@ -31,9 +32,9 @@ _r2mod ()
 			local -a subcommands
 			subcommands=(
 				'check:Check for Script Updates'
-				'disable:Disable All Mods'
+				'disable:Disable Mods'
 				'edit:Edit Mod Configs'
-				'enable:Enable All Mods'
+				'enable:Enable Mods'
 				'export:Export r2modman mod profile'
 				'hold:Toggle Mod Updates'
 				'import:Import r2modman mod profile'
@@ -58,6 +59,11 @@ _r2mod ()
 					_files -W "$CONFIG_DIR"
 					;;
 
+				en | enable)
+					[[ ! -d "$PLUGINS_DISABLED_DIR" ]] && return 1
+					_files -W "$PLUGINS_DISABLED_DIR" -/
+					;;
+
 				ins | install)
 					[[ ! -f "$TMP_DIR/comp_cache" ]] && return 1
 					local mods=( $(< "$TMP_DIR/comp_cache") )
@@ -73,19 +79,33 @@ _r2mod ()
 
 						*)
 							local args=( "preview" )
-							[[ ${args[*]} == "$line[3]" ]] && return 1
+							[[ ${args[*]} == "$line[-2]" ]] && return 1
 							compadd -a args
 							;;
 					esac
 					;;
 
 				li | list | ls)
-					local args=( "count" )
-					[[ ${args[*]} == "$line[2]" ]] && return 1
+					local args=()
+
+					case $line[2] in
+						"")
+							args=( "all" "count" )
+							;;
+						c | count)
+							args=( "all" )
+							;;
+						*)
+							return 1
+							;;
+					esac
+
+
+					[[ ${args[*]} == "${line[-2]}" ]] && return 1
 					compadd -a args
 					;;
 
-				un | uninstall | hol | hold | rem | remove)
+				un | uninstall | hol | hold | rem | remove | dis | disable)
 					[[ ! -d "$PLUGINS_DIR" ]] && return 1
 					_files -W "$PLUGINS_DIR" -F "( *R2API* bbepis-BepInExPack-* )" -/
 					;;

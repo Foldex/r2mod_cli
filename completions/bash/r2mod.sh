@@ -23,6 +23,7 @@ _r2mod()
 	BEPIN_DIR="$R2_DIR/BepInEx"
 	CONFIG_DIR="$BEPIN_DIR/config"
 	PLUGINS_DIR="$BEPIN_DIR/plugins"
+	PLUGINS_DISABLED_DIR="$BEPIN_DIR/plugins_disabled"
 	TMP_DIR="/tmp/r2mod"
 
 	case "$COMP_CWORD" in
@@ -38,6 +39,11 @@ _r2mod()
 					COMPREPLY=( $(cd "$CONFIG_DIR" && compgen -f -- "$cur") )
 					return 0
 					;;
+				en | enable)
+					[[ ! -d "$PLUGINS_DISABLED_DIR" ]] && return 1
+					COMPREPLY=( $(cd "$PLUGINS_DISABLED_DIR" && compgen -d -- "$cur") )
+					return 0
+					;;
 				ins | install)
 					[[ ! -f "$TMP_DIR/comp_cache" ]] && return 1
 					local mods=$(cat "$TMP_DIR/comp_cache" | tr '\n' ' ')
@@ -50,10 +56,11 @@ _r2mod()
 					return 0
 					;;
 				li | list | ls)
-					COMPREPLY=( "count" )
+					local args="all count"
+					COMPREPLY=( $(compgen -W "$args" -- "$cur" ) )
 					return 0
 					;;
-				un | uninstall | hol | hold | rem | remove)
+				un | uninstall | hol | hold | rem | remove | dis | disable)
 					[[ ! -d "$PLUGINS_DIR" ]] && return 1
 					COMPREPLY=( $(cd "$PLUGINS_DIR" && compgen -d -X "@(*R2API*|bbepis-BepInExPack-*)" -- "$cur") )
 					return 0
@@ -67,6 +74,10 @@ _r2mod()
 			case "$first" in
 				imp | import)
 					COMPREPLY=( "preview" )
+					return 0
+					;;
+				li | list | ls)
+					[[ "$prev" != "all" ]] && COMPREPLY=( "all" )
 					return 0
 					;;
 				*)
