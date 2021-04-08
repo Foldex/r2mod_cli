@@ -439,7 +439,7 @@ function dl_mod {
 			cecho b "Moving Patcher Files..." 1
 
 			for i in "${patcher_files[@]}"; do
-				mv "$i" "$BEPIN_DIR/patchers" || fatal_error "Failed to move Patcher Files"
+				mv -f "$i" "$BEPIN_DIR/patchers" || fatal_error "Failed to move Patcher Files"
 			done
 		fi
 
