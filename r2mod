@@ -206,8 +206,8 @@ function launch_game {
 
 function check_pkgs {
 
-	# Make sure the size is right, should be at least 2MB
-	local MIN_SIZE=2000000
+	# Make sure the size is right, should be at least 4MB
+	local MIN_SIZE=4000000
 	# shellcheck disable=SC2155
 	local FILE_SIZE=$(wc -c < "$1")
 	[[ "$FILE_SIZE" -lt "$MIN_SIZE" ]] && return 1
