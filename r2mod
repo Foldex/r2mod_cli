@@ -55,6 +55,9 @@ API_TIME="2 hours" # Update Interval
 PROFILE_GET_URL="https://r2modman-hastebin.herokuapp.com/raw"
 PROFILE_POST_URL="https://r2modman-hastebin.herokuapp.com/documents"
 
+# Mod Dependencies
+declare -A MOD_DEPS
+
 #############################
 ########## General ##########
 #############################
@@ -349,8 +352,6 @@ function install_core {
 }
 
 function dl_mod {
-	# TODO Handle Dependencies
-
 	# local MOD_AUTHOR="$1"
 	local MOD_NAME="$2"
 	local MOD_FULL_NAME="$1-$2"
@@ -389,6 +390,30 @@ function dl_mod {
 		local API_FILENAME
 		API_DL=$(echo "$API_JSON" | jq -r -e .download_url) || fatal_error "Failed to Parse $MOD_FULL_NAME JSON for its download link"
 		API_FILENAME=$(echo "$API_JSON" | jq -r -e .full_name) || fatal_error "Failed to Parse $MOD_FULL_NAME JSON for its full name"
+
+		# Dependencies
+		local API_DEPS
+		API_DEPS=$(echo "$API_JSON" | jq -r -e '.dependencies | @sh') || fatal_error "Failed to Parse $MOD_FULL_NAME JSON for its dependencies"
+		API_DEPS=($API_DEPS) # Recast as array
+
+		for i in "${API_DEPS[@]}"; do
+			# Remove ' from modstring
+			if [[ "${i//\'/}" =~ $MOD_FULL_REGEX ]]; then
+				local dep_author="${BASH_REMATCH[1]}"
+				local dep_name="${BASH_REMATCH[2]}"
+				local dep_version="${BASH_REMATCH[3]}"
+
+				if is_core_mod "$dep_author-$dep_name"; then
+					continue;
+				fi
+
+				# Only use the newest version from all dependencies
+				if version_gt "$dep_version" "${MOD_DEPS[$dep_author-$dep_name]}"; then
+					MOD_DEPS[$dep_author-$dep_name]=$dep_version
+				fi
+
+			fi
+		done
 
 		local API_DIR="$TMP_DIR/mods/$API_FILENAME"
 		local API_ZIP="$API_DIR.zip"
@@ -486,10 +511,23 @@ function install_mod {
 
 function install_mult_mods {
 	[[ -z "$*" ]] && fatal_error "No Mods Passed"
+
 	local mod
 	for mod in "$@"; do
 		install_mod "$mod"
 	done
+
+	[[ ${#MOD_DEPS[@]} -gt 0 ]] && cecho b "Installing Dependencies..."
+
+	local dependency
+	for i in {1..5}; do # Max Dependency Resolve Depth
+		for dependency in "${!MOD_DEPS[@]}"; do
+			if ! compgen -G "$PLUGINS_DIR/$dependency-*" > /dev/null; then
+				install_mod "$dependency-${MOD_DEPS[$dependency]}"
+			fi
+		done
+	done
+
 }
 
 function uninstall_mod {
