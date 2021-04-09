@@ -746,12 +746,16 @@ function toggle_mod {
 
 	local author
 	local name
+	local version
+	local hold
 	local input
 
 	[[ ! "$mod" =~ $MOD_FULL_REGEX ]] && fatal_error "Invalid Mod Passed"
 
 	author="${BASH_REMATCH[1]}"
 	name="${BASH_REMATCH[2]}"
+	version="${BASH_REMATCH[3]}"
+	hold="${BASH_REMATCH[4]}"
 
 	if is_core_mod "$author-$name"; then
 		fatal_error "Trying to toggle a core mod"
@@ -769,6 +773,21 @@ function toggle_mod {
 				[[ ! "$input" =~ ^[Yy](es)?$ ]] && return
 			fi
 
+			# Move patcher files
+			if [[ -d "$PATCHERS_DIR/$author-$name" ]]; then
+				local patcher_path="$PLUGINS_DIR/$mod"
+
+				if [[ -d "$patcher_path/patchers" ]]; then
+					patcher_path+="/patchers"
+				elif [[ -d "$patcher_path/BepInEx/patchers" ]]; then
+					patcher_path+="/BepInEx/patchers"
+				else
+					fatal_error "Couldn't find patchers dir in $mod dir"
+				fi
+
+				mv "$PATCHERS_DIR/$author-$name" "$patcher_path" || fatal_error "Couldn't move patcher files"
+			fi
+
 			[[ ! -d "$PLUGINS_DIR/$mod" ]] && fatal_error "$mod not found in plugins"
 			mv "$PLUGINS_DIR/$mod" "$PLUGINS_DISABLED_DIR" || fatal_error "Failed to move $mod to $PLUGINS_DISABLED_DIR"
 			;;
@@ -776,6 +795,9 @@ function toggle_mod {
 			cecho b "Enabling: $mod"
 			[[ ! -d "$PLUGINS_DISABLED_DIR/$mod" ]] && fatal_error "$mod not found in plugins_disabled"
 			mv "$PLUGINS_DISABLED_DIR/$mod" "$PLUGINS_DIR" || fatal_error "Failed to move $mod to $PLUGINS_DIR"
+
+			# Move patcher files
+			install_patcher_files "$author-$name" "$version"
 			;;
 		*)
 			fatal_error "toggle_mod: Invalid first argument"
