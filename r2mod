@@ -631,7 +631,12 @@ function uninstall_mod {
 	fi
 
 	cd "$PLUGINS_DIR" || fatal_error "Cannot CD into $PLUGINS_DIR"
-	compgen -G "$mod_dir" > /dev/null || fatal_error "$name not found"
+
+	# Handle Non-Existant or Disabled Plugin
+	if ! compgen -G "$mod_dir" > /dev/null; then
+		cd "$PLUGINS_DISABLED_DIR" || fatal_error "Cannot CD into $PLUGINS_DISABLED_DIR"
+		compgen -G "$mod_dir" > /dev/null || fatal_error "$name not found"
+	fi
 
 	cecho b "Removing $name..."
 
