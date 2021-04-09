@@ -36,6 +36,7 @@ fi
 
 BEPIN_DIR="$R2_DIR/BepInEx"
 CONFIG_DIR="$BEPIN_DIR/config"
+PATCHERS_DIR="$BEPIN_DIR/patchers"
 PLUGINS_DIR="$BEPIN_DIR/plugins"
 PLUGINS_DISABLED_DIR="$BEPIN_DIR/plugins_disabled"
 TMP_DIR="/tmp/r2mod"
@@ -455,8 +456,8 @@ function install_patcher_files {
 		patcher_path=${patcher_files[0]}
 	fi
 
-	[[ -d "$BEPIN_DIR/patchers/$mod_full_name" ]] && rm -rf "$BEPIN_DIR/patchers/$mod_full_name"
-	mv -f "$patcher_path" "$BEPIN_DIR/patchers/$mod_full_name"
+	[[ -d "$PATCHERS_DIR/$mod_full_name" ]] && rm -rf "$PATCHERS_DIR/$mod_full_name"
+	mv -f "$patcher_path" "$PATCHERS_DIR/$mod_full_name"
 }
 
 function backup_old_mod {
