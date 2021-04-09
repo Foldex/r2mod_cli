@@ -720,10 +720,10 @@ function toggle_mult_mods {
 			# All Mods
 			case "$1" in
 				0)
-					sed -i -e 's/enabled=true/enabled=false/' "$R2_DIR/doorstop_config.ini" && cecho b "All Mods Disabled"
+					sed -i -e 's/enabled=true/enabled=false/' "$R2_DIR/doorstop_config.ini" && cecho b "BepInEx Disabled"
 					;;
 				1)
-					sed -i -e 's/enabled=false/enabled=true/' "$R2_DIR/doorstop_config.ini" && cecho b "All Mods Enabled"
+					sed -i -e 's/enabled=false/enabled=true/' "$R2_DIR/doorstop_config.ini" && cecho b "BepInEx Enabled"
 					;;
 				*)
 					fatal_error "toggle_mult_mods: Invalid first argument"
