@@ -277,7 +277,7 @@ function update_check {
 
 function version_gt { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; }
 
-function is_core_mod { [[ "$1" =~ ^(bbepis-BepInExPack|tristanmcpherson-R2API)/?$ ]]; }
+function is_core_mod { [[ "$1" =~ ^(bbepis-BepInExPack|tristanmcpherson-R2API|RiskofThunder-HookGenPatcher)/?$ ]]; }
 
 function list_installed {
 	local list_all
