@@ -330,7 +330,7 @@ function install_core {
 				mkdir -p "$TMP_DIR/old"
 				mv "$BEPIN_DIR" "$TMP_DIR/old/BepInEx-$(date +%F_%T)" || fatal_error "Failed to Backup Old BepInEx Folder"
 				mv "$TMP_BEPIN/BepInExPack/"* "$R2_DIR" || fatal_error "Failed to Install New BepInEx Folder"
-				rm -rf "$TMP_BEPIN"
+				rm -rf "${TMP_BEPIN:?}"
 			else
 				# Just copy the cached version
 				cp -r -f "$api_dir/BepInExPack/"* "$R2_DIR" || fatal_error "Failed to Install New BepInEx Folder"
@@ -456,7 +456,7 @@ function install_patcher_files {
 		patcher_path=${patcher_files[0]}
 	fi
 
-	[[ -d "$PATCHERS_DIR/$mod_full_name" ]] && rm -rf "$PATCHERS_DIR/$mod_full_name"
+	[[ -d "$PATCHERS_DIR/$mod_full_name" ]] && rm -rf "${PATCHERS_DIR:?}/$mod_full_name"
 	mv -f "$patcher_path" "$PATCHERS_DIR/$mod_full_name"
 }
 
@@ -467,7 +467,7 @@ function backup_old_mod {
 
 		# Remove Destination if it already exists
 		if [[ -d "$TMP_DIR/old/$mod_dir" ]]; then
-			rm -rf "$TMP_DIR/old/$mod_dir"
+			rm -rf "${TMP_DIR:?}/old/$mod_dir"
 		fi
 
 		mv "$mod_dir" "$TMP_DIR/old"
@@ -648,7 +648,7 @@ function uninstall_mod {
 		# shellcheck disable=SC2086
 		rm -rf $mod_dir
 		# remove patcher dirs as well
-		[[ -d "$BEPIN_DIR/patchers/$author-$name" ]] && rm -rf "$BEPIN_DIR/patchers/$author-$name"
+		[[ -d "$BEPIN_DIR/patchers/$author-$name" ]] && rm -rf "${BEPIN_DIR:?}/patchers/$author-$name"
 		cecho g "Uninstalled $name"
 	fi
 }
@@ -984,7 +984,7 @@ EOF
 	cecho b "Zipping..." 1
 	cd "$TMP_DIR/profile/new" || fatal_error "Failed to cd to $TMP_DIR/profile/new"
 	7z a -tzip -y "$TMP_DIR/profile/$profile.zip" ./* > /dev/null || fatal_error "Failed to Zip Up Profile"
-	rm -rf "$TMP_DIR/profile/new/config"
+	rm -rf "${TMP_DIR:?}/profile/new/config"
 
 	cecho b "Encoding..." 1
 	# r2modman expects this header on the file
