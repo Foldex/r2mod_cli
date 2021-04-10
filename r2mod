@@ -289,20 +289,20 @@ function list_installed {
 	if [[ "$1" =~ ^c(ount)?$ ]]; then
 
 		if [[ -n "$list_all" ]]; then
-			cecho p "Enabled Plugins: $(ls "$PLUGINS_DIR" | wc -l)"
+			cecho p "Enabled Plugins: $(ls -I MMHOOK "$PLUGINS_DIR" | wc -l)"
 			cecho p "Disabled Plugins: $(ls "$PLUGINS_DISABLED_DIR" | wc -l)"
 		else
-			ls "$PLUGINS_DIR" | wc -l
+			ls -I MMHOOK "$PLUGINS_DIR" | wc -l
 		fi
 	else
 	# List Plugin Names
 		[[ -n "$list_all" ]] && cecho p "Enabled Plugins:"
-		ls -1 --color=auto --group-directories-first "$PLUGINS_DIR"
+		ls -I MMHOOK -1 --color=auto --group-directories-first "$PLUGINS_DIR"
 
 		if [[ -n "$list_all" ]]; then
 			echo
 			cecho p "Disabled Plugins:"
-			ls -1 --color=auto --group-directories-first "$PLUGINS_DISABLED_DIR"
+			ls -I MMHOOK -1 --color=auto --group-directories-first "$PLUGINS_DISABLED_DIR"
 		fi
 	fi
 }
@@ -668,7 +668,7 @@ function update_mods {
 
 	for mod_dir in */; do
 
-		if [[ $mod_dir == "R2API/" ]]; then
+		if [[ $mod_dir =~ ^(R2API|MMHOOK)/?$ ]]; then
 			continue;
 		fi
 
@@ -956,7 +956,7 @@ function profile_export {
 
 	for mod_dir in */; do
 
-		if [[ $mod_dir == "R2API/" ]]; then
+		if [[ $mod_dir =~ ^(R2API|MMHOOK)/?$ ]]; then
 			continue;
 		fi
 
