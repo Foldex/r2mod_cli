@@ -337,24 +337,6 @@ function install_core {
 			fi
 			;;
 
-		tristanmcpherson-R2API)
-			cecho b "Copying R2API Files..." 1
-
-			if [[ -d "$api_dir/patchers" ]]; then
-				# R2API v3
-				cp -r -f "$api_dir/patchers" "$BEPIN_DIR" || fatal_error "Failed to install R2API patchers folder"
-				# remove v2 monomod
-				[[ -f "$BEPIN_DIR/monomod/Assembly-CSharp.R2API.mm.dll" ]] && rm "$BEPIN_DIR/monomod/Assembly-CSharp.R2API.mm.dll"
-			elif [[ -d "$api_dir/monomod" ]]; then
-				# R2API v2 : TODO Should remove when mods update to R2API v3
-				cp -r -f "$api_dir/monomod" "$BEPIN_DIR" || fatal_error "Failed to install R2API monomod folder"
-				# remove v3 patcher
-				[[ -f "$BEPIN_DIR/patchers/R2API.Patcher.dll" ]] && rm "$BEPIN_DIR/patchers/R2API.Patcher.dll"
-			fi
-
-			cp -r -f "$api_dir/plugins" "$BEPIN_DIR" || fatal_error "Failed to install R2API plugins folder"
-			;;
-
 		*)
 			fatal_error "Not a core mod: $mod_full_name"
 			;;
@@ -535,8 +517,8 @@ function dl_mod {
 			rm "$api_zip"  || fatal_error "Failed to Delete $api_zip"
 		fi
 
-		# BepInEx and R2API Require Special Installs
-		if is_core_mod "$mod_full_name"; then
+		# BepInEx Requires Special Install
+		if [[ "$mod_full_name" ==  "bbepis-BepInExPack" ]]; then
 			install_core "$mod_full_name" "$api_filename" "$api_dir"
 			return
 		fi
