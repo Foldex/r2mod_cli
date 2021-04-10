@@ -56,6 +56,12 @@ API_TIME="2 hours" # Update Interval
 PROFILE_GET_URL="https://r2modman-hastebin.herokuapp.com/raw"
 PROFILE_POST_URL="https://r2modman-hastebin.herokuapp.com/documents"
 
+# Core Mod Strings
+R2MOD_STRING="Foldex-r2mod_cli"
+BEPIN_STRING="bbepis-BepInExPack"
+R2API_STRING="tristanmcpherson-R2API"
+HOOKGEN_STRING="RiskofThunder-HookGenPatcher"
+
 # Mod Dependencies
 declare -A MOD_DEPS
 
@@ -257,7 +263,7 @@ function update_check {
 	local api_json
 	local api_ver
 
-	api_json=$(jq -r -e --arg MOD "Foldex-r2mod_cli" '.[] | select(.full_name==$MOD) | .versions[0]' "$API_FILE") || fatal_error "Failed to Parse JSON"
+	api_json=$(jq -r -e --arg MOD "$R2MOD_STRING" '.[] | select(.full_name==$MOD) | .versions[0]' "$API_FILE") || fatal_error "Failed to Parse JSON"
 	api_ver=$(echo "$api_json" | jq -r -e .version_number) || fatal_error "Failed to Parse JSON for version number"
 
 	if version_gt "$api_ver" "$VERSION"; then
@@ -334,7 +340,7 @@ function is_active_dep {
 
 function version_gt { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; }
 
-function is_core_mod { [[ "$1" =~ ^(bbepis-BepInExPack|tristanmcpherson-R2API|RiskofThunder-HookGenPatcher)/?$ ]]; }
+function is_core_mod { [[ "$1" =~ ^($BEPIN_STRING|$R2API_STRING|$HOOKGEN_STRING)/?$ ]]; }
 
 function list_installed {
 	local list_all
@@ -369,7 +375,8 @@ function install_core {
 	local api_dir="$3"
 
 	case "$mod_full_name" in
-		bbepis-BepInExPack)
+
+		"$BEPIN_STRING")
 			if [[ -d "$BEPIN_DIR" ]]; then
 				cecho b "Copying Files into New BepinEx..." 1
 				cd "$R2_DIR" || fatal_error "Failed to CD to R2 Dir"
@@ -855,11 +862,11 @@ function setup_bepin {
 		fi
 
 		get_pkgs
-		install_mod "bbepis-BepInExPack"
+		install_mod "$BEPIN_STRING"
 		cecho g "Installed BepInEx" 1
-		install_mod "tristanmcpherson-R2API"
+		install_mod "$R2API_STRING"
 		cecho g "Installed R2API" 1
-		install_mod "RiskofThunder-HookGenPatcher"
+		install_mod "$HOOKGEN_STRING"
 		cecho g "Installed HookGenPatcher" 1
 
 		# setup can run as part of a sanity check, and then as the "setup" command arg
