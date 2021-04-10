@@ -373,6 +373,7 @@ function install_core {
 	local mod_full_name="$1"
 	local api_filename="$2"
 	local api_dir="$3"
+	local api_ver="$4"
 
 	case "$mod_full_name" in
 
@@ -398,6 +399,31 @@ function install_core {
 				# Just copy the cached version
 				cp -r -f "$api_dir/BepInExPack/"* "$R2_DIR" || fatal_error "Failed to Install New BepInEx Folder"
 			fi
+			;;
+
+		"$R2MOD_STRING")
+			local input
+
+			# Only install if newer version available
+			if ! version_gt "$api_ver" "$VERSION"; then
+			   cecho g "r2mod_cli: Up to date " 1
+			   return
+			fi
+
+			cecho b "Install r2mod? y/n" 1
+			read -r input
+			[[ ! "$input" =~ ^[Yy](es)?$ ]] && return
+
+			cd "$api_dir" || fatal_error "Failed to CD to API Dir"
+
+			cecho b "Previewing Makefile..." 1
+			sleep 2
+			less Makefile
+
+			cecho b "Running Makefile..." 1
+			sudo make install || fatal_error "Failed to install r2mod"
+
+			return
 			;;
 
 		*)
@@ -529,9 +555,9 @@ function dl_mod {
 			rm "$api_zip"  || fatal_error "Failed to Delete $api_zip"
 		fi
 
-		# BepInEx Requires Special Install
-		if [[ "$mod_full_name" ==  "bbepis-BepInExPack" ]]; then
-			install_core "$mod_full_name" "$api_filename" "$api_dir"
+		# BepInEx & r2mod require Special Installs
+		if [[ "$mod_full_name" =~  ^($BEPIN_STRING|$R2MOD_STRING)$ ]]; then
+			install_core "$mod_full_name" "$api_filename" "$api_dir" "$api_ver"
 			return
 		fi
 
