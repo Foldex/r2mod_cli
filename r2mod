@@ -364,7 +364,7 @@ function list_installed {
 		if [[ -n "$list_all" ]]; then
 			echo
 			cecho p "Disabled Plugins:"
-			ls -I MMHOOK -1 --color=auto --group-directories-first "$PLUGINS_DISABLED_DIR"
+			ls -1 --color=auto --group-directories-first "$PLUGINS_DISABLED_DIR"
 		fi
 	fi
 }
