@@ -181,9 +181,9 @@ function launch_game {
 	disown
 }
 
-####################################
-########## Package Cache  ##########
-####################################
+###################################
+########## Package Cache ##########
+###################################
 
 function check_pkgs {
 	# Make sure the size is right, should be at least 4MB
@@ -272,6 +272,63 @@ function update_check {
 	UPDATE_CHECK_COMPLETE=1
 }
 
+######################################
+########## Mod Dependencies ##########
+######################################
+
+function gen_mod_deps {
+	# Fill MOD_DEPS array with the dependencies from a mod
+	local api_json="$1"
+	local mod_full_name="$2"
+	local api_deps
+	api_deps=$(echo "$api_json" | jq -r -e '.dependencies | @sh') || fatal_error "Failed to Parse $mod_full_name JSON for its dependencies"
+	api_deps=($api_deps) # Recast as array
+
+	for i in "${api_deps[@]}"; do
+		# Remove ' from modstring
+		if [[ "${i//\'/}" =~ $MOD_FULL_REGEX ]]; then
+			local dep_author="${BASH_REMATCH[1]}"
+			local dep_name="${BASH_REMATCH[2]}"
+			local dep_version="${BASH_REMATCH[3]}"
+
+			if is_core_mod "$dep_author-$dep_name"; then
+				continue;
+			fi
+
+			# Only use the newest version from all dependencies
+			if version_gt "$dep_version" "${MOD_DEPS[$dep_author-$dep_name]}"; then
+				MOD_DEPS[$dep_author-$dep_name]=$dep_version
+			fi
+
+		fi
+	done
+}
+
+function is_active_dep {
+	# Checks to see if a mod is listed as a dependency of currently enabled mods
+	local mod="$1"
+	local not_active=1
+	local req_by
+
+	if ! compgen -G "$PLUGINS_DIR/*/manifest.json" > /dev/null; then
+		cecho p "No Manifest Files in plugins found. Can't check Dependencies."
+		return 2
+	fi
+
+	for i in "$PLUGINS_DIR"/*/manifest.json; do
+		req_by+=$(jq -r -e --arg MOD "$mod" \
+			'select(.dependencies[] | contains($MOD)) | .name + " "' \
+			"$i") && not_active=0
+	done
+
+	if [[ "$not_active" -eq 0 ]]; then
+	   cecho p "$mod is required by:"
+	   cecho p "$req_by"
+	fi
+
+	return "$not_active"
+}
+
 ####################################
 ########## Mod Management ##########
 ####################################
@@ -345,57 +402,6 @@ function install_core {
 	# Make Dummy Plugins Dir so we can track upgrades of core files
 	rmdir "$PLUGINS_DIR/$mod_full_name"* > /dev/null 2>&1
 	mkdir -p "$PLUGINS_DIR/$api_filename"
-}
-
-function gen_mod_deps {
-	local api_json="$1"
-	local mod_full_name="$2"
-	local api_deps
-	api_deps=$(echo "$api_json" | jq -r -e '.dependencies | @sh') || fatal_error "Failed to Parse $mod_full_name JSON for its dependencies"
-	api_deps=($api_deps) # Recast as array
-
-	for i in "${api_deps[@]}"; do
-		# Remove ' from modstring
-		if [[ "${i//\'/}" =~ $MOD_FULL_REGEX ]]; then
-			local dep_author="${BASH_REMATCH[1]}"
-			local dep_name="${BASH_REMATCH[2]}"
-			local dep_version="${BASH_REMATCH[3]}"
-
-			if is_core_mod "$dep_author-$dep_name"; then
-				continue;
-			fi
-
-			# Only use the newest version from all dependencies
-			if version_gt "$dep_version" "${MOD_DEPS[$dep_author-$dep_name]}"; then
-				MOD_DEPS[$dep_author-$dep_name]=$dep_version
-			fi
-
-		fi
-	done
-}
-
-function is_active_dep {
-	local mod="$1"
-	local not_active=1
-	local req_by
-
-	if ! compgen -G "$PLUGINS_DIR/*/manifest.json" > /dev/null; then
-		cecho p "No Manifest Files in plugins found. Can't check Dependencies."
-		return 2
-	fi
-
-	for i in "$PLUGINS_DIR"/*/manifest.json; do
-		req_by+=$(jq -r -e --arg MOD "$mod" \
-			'select(.dependencies[] | contains($MOD)) | .name + " "' \
-			"$i") && not_active=0
-	done
-
-	if [[ "$not_active" -eq 0 ]]; then
-	   cecho p "$mod is required by:"
-	   cecho p "$req_by"
-	fi
-
-	return "$not_active"
 }
 
 function fix_bad_extract {
