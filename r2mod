@@ -903,11 +903,11 @@ function profile_import {
 		awk '{
 		if ($2 == "name:")
 			printf "%s-",$3;
-		if ($code == "major:" || $code == "minor:")
+		if ($1 == "major:" || $1 == "minor:")
 			printf "%s.",$2;
-		if ($code == "patch:")
+		if ($1 == "patch:")
 			printf "%s ",$2;
-		if ($code == "enabled:")
+		if ($1 == "enabled:")
 			print $2
 			}' "$TMP_DIR/profile/export.r2x" > "$TMP_DIR/profile/$code"
 	fi
