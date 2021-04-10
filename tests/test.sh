@@ -15,6 +15,7 @@ mkdir -p "$R2_DIR" || exit 1
 
 BEPIN_DIR="$R2_DIR/BepInEx"
 CONFIG_DIR="$BEPIN_DIR/config"
+PATCHERS_DIR="$BEPIN_DIR/patchers"
 PLUGINS_DIR="$BEPIN_DIR/plugins"
 PLUGINS_DISABLED_DIR="$BEPIN_DIR/plugins_disabled"
 TMP_DIR="/tmp/r2mod"
@@ -70,8 +71,8 @@ yes | ../r2mod setup > /dev/null
 [[ -d "$BEPIN_DIR" ]] && NEW_TIME=$(date -r "$BEPIN_DIR" +%s)
 
 if [[ ! -d "$BEPIN_DIR" || \
-	! -d "$PLUGINS_DIR/R2API" || \
-	! -d "$BEPIN_DIR/patchers/RiskofThunder-HookGenPatcher" || \
+	! -d "$PATCHERS_DIR/tristanmcpherson-R2API" || \
+	! -d "$PATCHERS_DIR/RiskofThunder-HookGenPatcher" || \
 	"$OLD_TIME" -ge "$NEW_TIME" ]]; then
 	cecho r "Setup Failed!" 1
 	exit
@@ -107,9 +108,9 @@ cecho b "Valid Mod, Check Patcher" 1
 declare names=( "Harb-LighterPatcher" )
 for i in "${names[@]}"; do
 	[[ -d "$PLUGINS_DIR/$i" ]] && rm -r "$PLUGINS_DIR/$i"
-	[[ -d "$BEPIN_DIR/patchers/$i" ]] && rm -r "$BEPIN_DIR/patchers/$i"
+	[[ -d "$PATCHERS_DIR/$i" ]] && rm -r "$PATCHERS_DIR/$i"
 	../r2mod install "$i" > /dev/null
-	[[ -d "$BEPIN_DIR/patchers/$i" ]] || cecho r "$i Patcher Install Failed!" 1
+	[[ -d "$PATCHERS_DIR/$i" ]] || cecho r "$i Patcher Install Failed!" 1
 done
 
 cecho b "Valid Mod, Check Dependencies" 1
@@ -207,7 +208,7 @@ cecho b "Valid Mod, Check Patcher" 1
 declare names=( "Harb-LighterPatcher-1.0.5" )
 for i in "${names[@]}"; do
 	[[ -d "$PLUGINS_DIR/$i" ]] && yes | ../r2mod uninstall "$i" > /dev/null
-	[[ ! -d "$BEPIN_DIR/patchers/$i" ]] || cecho r "$i Patcher Uninstall Failed!" 1
+	[[ ! -d "$PATCHERS_DIR/$i" ]] || cecho r "$i Patcher Uninstall Failed!" 1
 done
 
 ###########
