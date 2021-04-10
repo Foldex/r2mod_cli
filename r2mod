@@ -66,20 +66,19 @@ declare -A MOD_DEPS
 function help {
 	echo "R2MOD USAGE
 	r2mod ch(eck): Check for Script Updates
-	r2mod dis(able): Disable All Mods
+	r2mod dis(able) (Mod-Dependency-String): Disable Mods
 	r2mod ed(it) ConfigName: Edit Mod Configs
-	r2mod en(able): Enable All Mods
+	r2mod en(able) (Mod-Dependency-String): Enable Mods
 	r2mod exp(ort) ProfileName: Export r2modman mod profile
 	r2mod hol(d): Toggle Mod Updates
 	r2mod imp(ort) ProfileCode: Install r2modman mod profile
-	r2mod ins(tall) Thunderstore-Dependency-String: Install New Mod
-	r2mod li(st) (count): List or Count Installed Mods
-	r2mod num(ber): Show Number Of Mods Installed
+	r2mod ins(tall) Mod-Dependency-String: Install New Mod
+	r2mod li(st) (count|all) : List or Count Installed Mods
 	r2mod ref(resh): Force Refresh Package Cache
 	r2mod run: Launch Risk of Rain
 	r2mod sea(rch): Search for Mods
 	r2mod set(up): Install a Fresh BepInEx Setup
-	r2mod un(install) Thunderstore-Dependency-String: Uninstall Mod
+	r2mod un(install) Mod-Dependency-String: Uninstall Mod
 	r2mod upd(ate): Update All Exisiting Mods
 	r2mod ver(sion): Print Version"
 	exit

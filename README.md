@@ -66,26 +66,26 @@ Accepts shorthand for command names.
 
 ```
 r2mod ch(eck): Check for Script Updates
-r2mod dis(able): Disable All Mods
+r2mod dis(able) (Mod-Dependency-String): Disable Mods
 r2mod ed(it) ConfigName: Edit Mod Configs
-r2mod en(able): Enable All Mods
+r2mod en(able) (Mod-Dependency-String): Enable Mods
 r2mod exp(ort) ProfileName: Export r2modman mod profile
 r2mod hol(d): Toggle Mod Updates
 r2mod imp(ort) ProfileCode: Install r2modman mod profile
-r2mod ins(tall) Thunderstore-Dependency-String: Install New Mod
-r2mod li(st) (count): List or Count Installed Mods
+r2mod ins(tall) Mod-Dependency-String: Install New Mod
+r2mod li(st) (count|all) : List or Count Installed Mods
 r2mod ref(resh): Force Refresh Package Cache
 r2mod run: Launch Risk of Rain
 r2mod sea(rch): Search for Mods
 r2mod set(up): Install a Fresh BepInEx Setup
-r2mod un(install) Thunderstore-Dependency-String: Uninstall Mod
+r2mod un(install) Mod-Dependency-String: Uninstall Mod
 r2mod upd(ate): Update All Exisiting Mods
-r2mod ver(sion): Print Version
+r2mod ver(sion): Print Version"
 ```
 
 ### Installing a Mod
 
-Use `r2mod install ontrigger-ItemStatsMod-2.0.0` to install a mod.
+`r2mod install ontrigger-ItemStatsMod-2.0.0` to install a mod.
 
 If the version number is left out, the most recent version will be installed.
 
@@ -107,6 +107,26 @@ Multiple mods can also be uninstalled
 
 `r2mod uninstall ontrigger-ItemStatsMod MagnusMagnuson-BiggerBazaar`
 
+### Disabling Mods
+
+`r2mod disable` to disable BepInEx entirely.
+
+`r2mod enable` to re-enable.
+
+`r2mod disable ontrigger-ItemStatsMod-2.0.0` to disable a specific mod.
+
+`r2mod enable ontrigger-ItemStatsMod-2.0.0` to re-enable.
+
+### Listing Installed Mods
+
+`r2mod list` to display installed mods.
+
+`r2mod list all` to display installed mods and disabled mods.
+
+`r2mod list count` to display a count of installed mods.
+
+`r2mod list count all` to display a count of installed mods and disabled mods.
+
 ### Editing Configs
 
 `$EDITOR` environment variable is used to determine which editor to use.
@@ -124,10 +144,6 @@ Run again to remove the hold.
 ### Files
 
 All Files, Old Versions, and Backups can be found in `/tmp/r2mod`
-
-## Todo
-
-- Resolve and Install Dependencies for mods.
 
 ## Changelog
 
