@@ -125,6 +125,10 @@ function fatal_error {
 	exit 1
 }
 
+function test_glob {
+	compgen -G "$1" > /dev/null
+}
+
 function sanity_check {
 	ERROR=0
 
@@ -159,13 +163,13 @@ function sanity_check {
 	fi
 
 	# Check Core Mods
-	if ! compgen -G "$PLUGINS_DIR/$R2API_STRING-*" > /dev/null || [[ ! -d "$PATCHERS_DIR/$R2API_STRING" ]]; then
+	if ! test_glob "$PLUGINS_DIR/$R2API_STRING-*" || [[ ! -d "$PATCHERS_DIR/$R2API_STRING" ]]; then
 		[[ ! -f "$API_FILE" ]] && get_pkgs
 		cecho p "R2API Missing, Installing"
 		install_mod "$R2API_STRING"
 	fi
 
-	if ! compgen -G "$PLUGINS_DIR/$HOOKGEN_STRING-*" > /dev/null || [[ ! -d "$PATCHERS_DIR/$HOOKGEN_STRING" ]]; then
+	if ! test_glob "$PLUGINS_DIR/$HOOKGEN_STRING-*" || [[ ! -d "$PATCHERS_DIR/$HOOKGEN_STRING" ]]; then
 		[[ ! -f "$API_FILE" ]] && get_pkgs
 		cecho p "HOOKGEN Missing, Installing"
 		install_mod "$HOOKGEN_STRING"
@@ -329,7 +333,7 @@ function is_active_dep {
 	local not_active=1
 	local req_by
 
-	if ! compgen -G "$PLUGINS_DIR/*/manifest.json" > /dev/null; then
+	if ! test_glob "$PLUGINS_DIR/*/manifest.json"; then
 		cecho p "No Manifest Files in plugins found. Can't check Dependencies."
 		return 2
 	fi
@@ -579,7 +583,7 @@ function dl_mod {
 
 		# Handle Disabled Mods
 		local plugins_dir=$PLUGINS_DIR
-		if compgen -G "$PLUGINS_DISABLED_DIR/$mod_full_name-*" > /dev/null; then
+		if test_glob "$PLUGINS_DISABLED_DIR/$mod_full_name-*"; then
 			plugins_dir=$PLUGINS_DISABLED_DIR
 		fi
 
@@ -633,7 +637,7 @@ function install_mult_mods {
 	local dependency
 	for i in {1..5}; do # Max Dependency Resolve Depth
 		for dependency in "${!MOD_DEPS[@]}"; do
-			if ! compgen -G "$PLUGINS_DIR/$dependency-*" > /dev/null; then
+			if ! test_glob "$PLUGINS_DIR/$dependency-*"; then
 				install_mod "$dependency-${MOD_DEPS[$dependency]}"
 			fi
 		done
@@ -667,9 +671,9 @@ function uninstall_mod {
 	cd "$PLUGINS_DIR" || fatal_error "Cannot CD into $PLUGINS_DIR"
 
 	# Handle Non-Existent or Disabled Plugin
-	if ! compgen -G "$mod_dir" > /dev/null; then
+	if ! test_glob "$mod_dir"; then
 		cd "$PLUGINS_DISABLED_DIR" || fatal_error "Cannot CD into $PLUGINS_DISABLED_DIR"
-		compgen -G "$mod_dir" > /dev/null || fatal_error "$name not found"
+		test_glob "$mod_dir" || fatal_error "$name not found"
 	fi
 
 	cecho b "Removing $name..."
@@ -872,7 +876,7 @@ function edit_configs {
 
 	shopt -s nocaseglob # case insensitive matching
 	local files="*$1*"
-	compgen -G "$files" > /dev/null || fatal_error "Configs for $1 not found"
+	test_glob "$files" || fatal_error "Configs for $1 not found"
 
 	# shellcheck disable=SC2086
 	"$EDITOR" $files
