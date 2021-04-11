@@ -323,6 +323,26 @@ function gen_mod_deps {
 	done
 }
 
+function resolve_mod_deps {
+	[[ ${#MOD_DEPS[@]} -eq 0 ]] && return
+
+	local dependency
+	for i in {1..5}; do # Max Dependency Resolve Depth
+		for dependency in "${!MOD_DEPS[@]}"; do
+			if ! test_glob "$PLUGINS_DIR/$dependency-*"; then
+				# Enable Missing Dependency if Disabled, otherwise Install
+				if test_glob "$PLUGINS_DISABLED_DIR/$dependency-*"; then
+					cecho p "Dependency Disabled: $dependency"
+					toggle_mod 1 "$dependency-${MOD_DEPS[$dependency]}"
+				else
+					cecho p "Dependency Missing: $dependency"
+					install_mod "$dependency-${MOD_DEPS[$dependency]}"
+				fi
+			fi
+		done
+	done
+}
+
 function is_active_dep {
 	# Checks to see if a mod is listed as a dependency of currently enabled mods
 	local mod="$1"
@@ -626,16 +646,8 @@ function install_mult_mods {
 		install_mod "$mod"
 	done
 
-	[[ ${#MOD_DEPS[@]} -gt 0 ]] && cecho b "Installing Dependencies..."
-
-	local dependency
-	for i in {1..5}; do # Max Dependency Resolve Depth
-		for dependency in "${!MOD_DEPS[@]}"; do
-			if ! test_glob "$PLUGINS_DIR/$dependency-*"; then
-				install_mod "$dependency-${MOD_DEPS[$dependency]}"
-			fi
-		done
-	done
+	[[ ${#MOD_DEPS[@]} -gt 0 ]] && cecho b "Resolving Dependencies..."
+	resolve_mod_deps
 }
 
 function uninstall_mod {
