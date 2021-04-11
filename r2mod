@@ -881,7 +881,7 @@ function toggle_mod {
 				gen_mod_deps "$api_json" "$full_name"
 				resolve_mod_deps
 			else
-				cecho p "No Manifest Files in plugins found. Can't check Dependencies."
+				cecho p "Manifest File in $mod not found. Can't check Dependencies."
 			fi
 			;;
 
