@@ -172,7 +172,6 @@ function sanity_check {
 			install_mod "$i"
 		fi
 	done
-
 }
 
 function launch_game {
@@ -188,13 +187,11 @@ function launch_game {
 	cecho b "(1) Modded (2) Vanilla"
 	read -r input
 
-	if [[ "$input" == 1 ]]; then
-		toggle_mult_mods 1
-	elif [[ "$input" == 2 ]]; then
-		toggle_mult_mods 0
-	else
-		fatal_error "Invalid Selection"
-	fi
+	case "$input" in
+		 1) toggle_mult_mods 1;;
+		 2) toggle_mult_mods 0;;
+		 *) fatal_error "Invalid Selection";;
+	esac
 
 	cecho b "Running Risk of Rain..."
 	# shellcheck disable=SC2086
@@ -251,7 +248,6 @@ function get_pkgs {
 	else
 		fatal_error "Package Cache DL Incomplete"
 	fi
-
 }
 
 function search_pkgs {
@@ -273,7 +269,9 @@ function search_pkgs {
 }
 
 function update_check {
-	[[ "$1" != 1 ]] && get_pkgs
+	local skip_get_pkg="$1"
+
+	[[ "$skip_get_pkg" != 1 ]] && get_pkgs
 	[[ -n "$UPDATE_CHECK_COMPLETE" ]] && return
 
 	local api_json
@@ -465,7 +463,6 @@ function fix_bad_extract {
 		mkdir -p  "${fixed_filename%/*}"
 		mv "$i" "$fixed_filename"
 	done
-
 }
 
 function install_patcher_files {
@@ -508,7 +505,6 @@ function backup_old_mod {
 
 		mv "$mod_dir" "$TMP_DIR/old"
 	fi
-
 }
 
 function dl_mod {
@@ -640,7 +636,6 @@ function install_mult_mods {
 			fi
 		done
 	done
-
 }
 
 function uninstall_mod {
@@ -703,16 +698,16 @@ function uninstall_mult_mods {
 }
 
 function update_mods {
-	# $1: bool to update disabled mods
+	local upd_disabled="$1"
 
 	local author
 	local name
 	local version
 	local hold
 
-	[[ -z "$1" ]] && get_pkgs
+	[[ -z "$upd_disabled" ]] && get_pkgs
 
-	if [[ "$1" == "1" ]]; then
+	if [[ "$upd_disabled" == 1 ]]; then
 		cecho b "Updating Disabled Mods..."
 		cd "$PLUGINS_DISABLED_DIR" || fatal_error "Cannot CD into $PLUGINS_DISABLED_DIR"
 	else
@@ -744,31 +739,25 @@ function update_mods {
 
 	done
 
-	if [[ -z "$1" ]] && [[ $(ls -A "$PLUGINS_DISABLED_DIR") ]]; then
+	if [[ -z "$upd_disabled" ]] && [[ $(ls -A "$PLUGINS_DISABLED_DIR") ]]; then
 		update_mods 1
 	fi
 
-	[[ -z "$1" ]] && cecho g "Finished Updating Mods"
+	[[ -z "$upd_disabled" ]] && cecho g "Finished Updating Mods"
 }
 
 function toggle_mult_mods {
-	# $1: bool to disable or enable mods
+	local enable="$1"
 
-	[[ "$1" != 0 && "$1" != 1 ]] && fatal_error "toggle_mult_mods: Invalid first argument"
+	[[ ! "$enable" =~ [01] ]] && fatal_error "toggle_mult_mods: Invalid first argument"
 
 	case "${@:2}" in
 		"")
 			# All Mods
 			case "$1" in
-				0)
-					sed -i -e 's/enabled=true/enabled=false/' "$R2_DIR/doorstop_config.ini" && cecho b "BepInEx Disabled"
-					;;
-				1)
-					sed -i -e 's/enabled=false/enabled=true/' "$R2_DIR/doorstop_config.ini" && cecho b "BepInEx Enabled"
-					;;
-				*)
-					fatal_error "toggle_mult_mods: Invalid first argument"
-					;;
+				0) sed -i -e 's/enabled=true/enabled=false/' "$R2_DIR/doorstop_config.ini" && cecho b "BepInEx Disabled";;
+				1) sed -i -e 's/enabled=false/enabled=true/' "$R2_DIR/doorstop_config.ini" && cecho b "BepInEx Enabled";;
+				*) fatal_error "toggle_mult_mods: Invalid first argument";;
 			esac
 			;;
 		*)
@@ -832,6 +821,7 @@ function toggle_mod {
 			[[ ! -d "$PLUGINS_DIR/$mod" ]] && fatal_error "$mod not found in plugins"
 			mv "$PLUGINS_DIR/$mod" "$PLUGINS_DISABLED_DIR" || fatal_error "Failed to move $mod to $PLUGINS_DISABLED_DIR"
 			;;
+
 		1)
 			cecho b "Enabling: $mod"
 			[[ ! -d "$PLUGINS_DISABLED_DIR/$mod" ]] && fatal_error "$mod not found in plugins_disabled"
@@ -840,6 +830,7 @@ function toggle_mod {
 			# Move patcher files
 			install_patcher_files "$author-$name" "$version"
 			;;
+
 		*)
 			fatal_error "toggle_mod: Invalid first argument"
 			;;
@@ -881,9 +872,10 @@ function edit_configs {
 }
 
 function setup_bepin {
+	local skip_prompt="$1"
 	local input
-	# Prompt for setup, or automatically initiate
-	if [[ $1 != 1 ]]; then
+
+	if [[ "$skip_prompt" != 1 ]]; then
 		cecho b "Setup New BepInEx Install? y/n"
 		read -r input
 	else
@@ -918,7 +910,6 @@ function setup_bepin {
 		cecho p "Setup Cancelled"
 		exit 0
 	fi
-
 }
 
 ##################################
@@ -1070,7 +1061,7 @@ EOF
 
 sanity_check
 
-case $1 in
+case "$1" in
     ch*)  update_check;;
     dis*) toggle_mult_mods 0 "${@:2}";;
     ed*)  edit_configs "$2";;
