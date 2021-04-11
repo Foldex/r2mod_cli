@@ -163,17 +163,15 @@ function sanity_check {
 	fi
 
 	# Check Core Mods
-	if ! test_glob "$PLUGINS_DIR/$R2API_STRING-*" || [[ ! -d "$PATCHERS_DIR/$R2API_STRING" ]]; then
-		[[ ! -f "$API_FILE" ]] && get_pkgs
-		cecho p "R2API Missing, Installing"
-		install_mod "$R2API_STRING"
-	fi
+	local core_mods=("$R2API_STRING" "$HOOKGEN_STRING")
 
-	if ! test_glob "$PLUGINS_DIR/$HOOKGEN_STRING-*" || [[ ! -d "$PATCHERS_DIR/$HOOKGEN_STRING" ]]; then
-		[[ ! -f "$API_FILE" ]] && get_pkgs
-		cecho p "HOOKGEN Missing, Installing"
-		install_mod "$HOOKGEN_STRING"
-	fi
+	for i in "${core_mods[@]}"; do
+		if ! test_glob "$PLUGINS_DIR/$i-*" || [[ ! -d "$PATCHERS_DIR/$i" ]]; then
+			[[ ! -f "$API_FILE" ]] && get_pkgs
+			cecho p "${i##*-} Missing, Installing"
+			install_mod "$i"
+		fi
+	done
 
 }
 
