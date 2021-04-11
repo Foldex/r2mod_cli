@@ -157,6 +157,20 @@ function sanity_check {
 		[[ ! -f "$R2_DIR/winhttp.dll" ]] && fatal_error "winhttp.dll Missing, Setup Failed"
 		[[ ! -f "$R2_DIR/doorstop_config.ini" ]] && fatal_error "doorstop_config.ini Missing, Setup Failed"
 	fi
+
+	# Check Core Mods
+	if ! compgen -G "$PLUGINS_DIR/$R2API_STRING-*" > /dev/null || [[ ! -d "$PATCHERS_DIR/$R2API_STRING" ]]; then
+		[[ ! -f "$API_FILE" ]] && get_pkgs
+		cecho p "R2API Missing, Installing"
+		install_mod "$R2API_STRING"
+	fi
+
+	if ! compgen -G "$PLUGINS_DIR/$HOOKGEN_STRING-*" > /dev/null || [[ ! -d "$PATCHERS_DIR/$HOOKGEN_STRING" ]]; then
+		[[ ! -f "$API_FILE" ]] && get_pkgs
+		cecho p "HOOKGEN Missing, Installing"
+		install_mod "$HOOKGEN_STRING"
+	fi
+
 }
 
 function launch_game {
