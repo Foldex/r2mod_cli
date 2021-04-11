@@ -309,14 +309,19 @@ function gen_mod_deps {
 			local dep_author="${BASH_REMATCH[1]}"
 			local dep_name="${BASH_REMATCH[2]}"
 			local dep_version="${BASH_REMATCH[3]}"
+			local dep_full_name="$dep_author-$dep_name"
 
-			if is_core_mod "$dep_author-$dep_name"; then
-				continue;
+			if is_core_mod "$dep_full_name"; then
+				continue
+			fi
+
+			if is_installed_dep "$dep_full_name"; then
+				continue
 			fi
 
 			# Only use the newest version from all dependencies
-			if version_gt "$dep_version" "${MOD_DEPS[$dep_author-$dep_name]}"; then
-				MOD_DEPS[$dep_author-$dep_name]=$dep_version
+			if version_gt "$dep_version" "${MOD_DEPS[$dep_full_name]}"; then
+				MOD_DEPS[$dep_full_name]=$dep_version
 			fi
 
 		fi
@@ -326,21 +331,41 @@ function gen_mod_deps {
 function resolve_mod_deps {
 	[[ ${#MOD_DEPS[@]} -eq 0 ]] && return
 
-	local dependency
+	local dep_full_name
 	for i in {1..5}; do # Max Dependency Resolve Depth
-		for dependency in "${!MOD_DEPS[@]}"; do
-			if ! test_glob "$PLUGINS_DIR/$dependency-*"; then
-				# Enable Missing Dependency if Disabled, otherwise Install
-				if test_glob "$PLUGINS_DISABLED_DIR/$dependency-*"; then
-					cecho p "Dependency Disabled: $dependency"
-					toggle_mod 1 "$dependency-${MOD_DEPS[$dependency]}"
-				else
-					cecho p "Dependency Missing: $dependency"
-					install_mod "$dependency-${MOD_DEPS[$dependency]}"
-				fi
+		for dep_full_name in "${!MOD_DEPS[@]}"; do
+			local ver="${MOD_DEPS[$dep_full_name]}"
+
+			if is_installed_dep "$dep_full_name"; then
+				continue
+			fi
+
+			# Enable Missing Dependency if Disabled, otherwise Install
+			if test_glob "$PLUGINS_DISABLED_DIR/$dep_full_name-*"; then
+				cecho p "Dependency Disabled: $dep_full_name"
+				toggle_mod 1 "$dep_full_name-$ver"
+			else
+				cecho p "Dependency Missing: $dep_full_name"
+				install_mod "$dep_full_name-$ver"
 			fi
 		done
 	done
+}
+
+function is_installed_dep {
+	local dep_full_name="$1"
+	local ver="${MOD_DEPS[$dep_full_name]}"
+
+	# Version 0 means the dependency has already been confirmed
+	[[ "$ver" == 0 ]] && return 0
+
+	# Check if dep is installed
+	if test_glob "$PLUGINS_DIR/$dep_full_name-*"; then
+		MOD_DEPS[$dep_full_name]=0
+		return 0
+	fi
+
+	return 1
 }
 
 function is_active_dep {
