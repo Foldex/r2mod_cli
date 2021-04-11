@@ -841,6 +841,16 @@ function toggle_mod {
 
 			# Move patcher files
 			install_patcher_files "$author-$name" "$version"
+
+			# Dependencies
+			if [[ -f "$PLUGINS_DIR/$mod/manifest.json" ]]; then
+				local api_json
+				api_json=$(cat "$PLUGINS_DIR/$mod/manifest.json") || fatal_error "Could not read manifest.json for dependencies"
+				gen_mod_deps "$api_json" "$author-$name"
+				resolve_mod_deps
+			else
+				cecho p "No Manifest Files in plugins found. Can't check Dependencies."
+			fi
 			;;
 
 		*)
