@@ -751,6 +751,11 @@ function update_mods {
 
 	done
 
+	if [[ -z "$upd_disabled" ]]; then
+	   [[ ${#MOD_DEPS[@]} -gt 0 ]] && cecho b "Resolving Dependencies..."
+	   resolve_mod_deps
+	fi
+
 	if [[ -z "$upd_disabled" ]] && [[ $(ls -A "$PLUGINS_DISABLED_DIR") ]]; then
 		update_mods 1
 	fi
