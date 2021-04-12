@@ -12,6 +12,7 @@ A simple mod manager written in Bash for Linux users.
 - Simple No-Nonsense Usage
 - Setup BepInEx and R2API
 - Install and Update Mods
+- Resolve Dependencies
 - Hold Specific Mods Back from Updating
 - Enable/Disable Mods
 - Edit Mod Configs
@@ -40,6 +41,14 @@ The following programs should be installed:
 
 ### Install
 
+#### AUR
+
+r2mod is available in the Arch AUR as `r2mod_cli`
+
+`yay -S r2mod_cli`
+
+#### Manual
+
 Extract the zip and run `sudo make install` inside its directory.
 
 ### First Setup
@@ -59,6 +68,10 @@ If you've installed Risk of Rain 2 to a different location, please export the en
 `$R2MOD_INSTALL_DIR` in your bash profile and point it to your install directory:
 
 `export R2MOD_INSTALL_DIR="$HOME/custom/dir/Risk of Rain 2"`
+
+`$R2MOD_COMPAT_DIR` also exists for custom locations of Steam's compatdata directory.
+
+`export R2MOD_COMPAT_DIR="$HOME/custom/dir/steamapps/compatdata/632360"`
 
 ### Command List
 
@@ -141,13 +154,30 @@ Mods can be prevented from being auto updated by running `r2mod hold ModName`.
 
 Run again to remove the hold.
 
+### Updating r2mod
+
+Updates for r2mod will be automatically checked, but not installed.
+
+Installing r2mod updates can be done like any other mod:
+
+`r2mod install Foldex-r2mod_cli`
+
 ### Files
 
 All Files, Old Versions, and Backups can be found in `/tmp/r2mod`
 
 ## Changelog
 
+### 1.1.0
+
+- Dependency Support
+- Disable/Enable Individual Mods
+- Install r2mod updates through r2mod
+- Add HookGenPatcher to default installs
+- Add r2mod to AUR
+
 ### 1.0.7
+
 - Support R2API v3
 - Allow Custom Steam Compat Dir
 - Add Completion for `import preview`
