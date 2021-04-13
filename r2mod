@@ -39,6 +39,7 @@ CONFIG_DIR="$BEPIN_DIR/config"
 PATCHERS_DIR="$BEPIN_DIR/patchers"
 PLUGINS_DIR="$BEPIN_DIR/plugins"
 PLUGINS_DISABLED_DIR="$BEPIN_DIR/plugins_disabled"
+PROFILES_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/r2mod_cli/profiles"
 TMP_DIR="/tmp/r2mod"
 
 # Regex
@@ -971,28 +972,52 @@ function setup_bepin {
 ##################################
 
 function profile_import {
-	local code="$1"
-	local preview="$2"
+	local shared="$1"
+	local code="$2"
+	local preview="$3"
 
-	if [[ ! "$code" =~ $PROFILE_REGEX ]]; then
-		fatal_error "$code is not a Valid Profile Code"
-	fi
+	local tmp_dir="$TMP_DIR/profile"
+	local profile_path="$tmp_dir/$code"
+	local profile_zip="$profile_path.zip"
 
-	if [[ ! -f "$TMP_DIR/profile/$code.zip" ]]; then
-		mkdir -p "$TMP_DIR/profile"
-		cecho b "Downloading Profile $code..."
-		curl -fSsL "$PROFILE_GET_URL/$code" -o "$TMP_DIR/profile/${code}_raw" || fatal_error "Failed to Download Profile from $PROFILE_GET_URL/$code"
-		cecho b "Decoding..."
-		tail -n 1 "$TMP_DIR/profile/${code}_raw" | base64 -d > "$TMP_DIR/profile/$code.zip" || fatal_error "Failed to Decode Profile $code"
-		rm "$TMP_DIR/profile/${code}_raw"
-	else
-		cecho b "Cached Profile $code Found"
-	fi
+	[[ ! -d "$tmp_dir" ]] && mkdir -p "$tmp_dir"
+
+	case "$shared" in
+		# Importing from locally saved profiles
+		0)
+			local name="${code:-default}"
+			[[ ! -d "$PROFILES_DIR" ]] && mkdir -p "$PROFILES_DIR"
+			profile_zip="$PROFILES_DIR/$name.zip"
+			[[ ! -f "$profile_zip" ]] && fatal_error "Profile $name not found"
+			;;
+
+		# Importing the Profile via a r2modman code
+		1)
+			if [[ ! "$code" =~ $PROFILE_REGEX ]]; then
+				fatal_error "$code is not a Valid Profile Code"
+			fi
+
+			if [[ ! -f "$profile_zip" ]]; then
+				cecho b "Downloading Profile $code..."
+				curl -fSsL "$PROFILE_GET_URL/$code" -o "${profile_path}_raw" || fatal_error "Failed to Download Profile from $PROFILE_GET_URL/$code"
+				cecho b "Decoding..."
+				tail -n 1 "${profile_path}_raw" | base64 -d > "$profile_zip" || fatal_error "Failed to Decode Profile $code"
+				rm "${profile_path}_raw"
+			else
+				cecho b "Cached Profile $code Found"
+			fi
+			;;
+
+		*)
+			echo "profile_import: Invalid shared argument"
+			;;
+
+	esac
 
 	cecho b "Extracting..."
-	7z x -y -o"$TMP_DIR/profile" "$TMP_DIR/profile/$code.zip" > /dev/null || fatal_error "Failed to Unzip Profile $code"
+	7z x -y -o"$tmp_dir" "$profile_zip" > /dev/null || fatal_error "Failed to Unzip Profile $code"
 
-	if [[ ! -f "$TMP_DIR/profile/$code" ]]; then
+	if [[ ! -f "$profile_path" ]]; then
 		# Hacky Awk processing because Bash cant into YAML
 		awk '{
 		if ($2 == "name:")
@@ -1003,12 +1028,12 @@ function profile_import {
 			printf "%s ",$2;
 		if ($1 == "enabled:")
 			print $2
-			}' "$TMP_DIR/profile/export.r2x" > "$TMP_DIR/profile/$code"
+			}' "$tmp_dir/export.r2x" > "$profile_path"
 	fi
 
 	if [[ "$preview" =~ ^[Pp](review)?$ ]]; then
 		cecho b "Previewing..."
-		cat "$TMP_DIR/profile/$code"
+		cat "$profile_path"
 		return
 	fi
 
@@ -1022,19 +1047,26 @@ function profile_import {
 		if [[ "$enabled" == true ]]; then
 			install_mod "$mod"
 		fi
-	done < "$TMP_DIR/profile/$code"
+	done < "$profile_path"
 
-	if [[ -d "$TMP_DIR/profile/config" ]]; then
+	if [[ -d "$tmp_dir/config" ]]; then
 		cecho b "Copying Profile Configs..."
-		mv -f "$TMP_DIR/profile/config/"* "$CONFIG_DIR"
+		mv -f "$tmp_dir/config/"* "$CONFIG_DIR"
 	fi
 
 	cecho g "Finished Installing Profile"
 }
 
 function profile_export {
-	local profile="$1"
-	local export="$TMP_DIR/profile/new/export.r2x"
+	local shared="$1"
+	local profile="${2:-default}"
+
+	local tmp_dir="$TMP_DIR/profile"
+	local profile_path="$tmp_dir/$profile"
+	local profile_zip="$profile_path.zip"
+	local export_dir="$tmp_dir/new"
+	local export="$export_dir/export.r2x"
+
 	local author
 	local name
 	local version
@@ -1047,7 +1079,7 @@ function profile_export {
 
 	cecho b "Exporting Profile $profile..."
 	cecho b "Exporting Mods..." 1
-	mkdir -p "$TMP_DIR/profile/new" || fatal_error "Failed to Make $TMP_DIR/profile/new"
+	mkdir -p "$export_dir" || fatal_error "Failed to Make $export_dir"
 	echo "profileName: $profile" > "$export"
 	echo "mods:" >> "$export"
 
@@ -1087,26 +1119,50 @@ EOF
 	done
 
 	cecho b "Copying Configs..." 1
-	cp -r "$CONFIG_DIR" "$TMP_DIR/profile/new"
+	cp -r "$CONFIG_DIR" "$export_dir"
 
 	cecho b "Zipping..." 1
-	cd "$TMP_DIR/profile/new" || fatal_error "Failed to cd to $TMP_DIR/profile/new"
-	7z a -tzip -y "$TMP_DIR/profile/$profile.zip" ./* > /dev/null || fatal_error "Failed to Zip Up Profile"
-	rm -rf "${TMP_DIR:?}/profile/new/config"
+	cd "$export_dir" || fatal_error "Failed to cd to $export_dir"
+	7z a -tzip -y "$profile_zip" ./* > /dev/null || fatal_error "Failed to Zip Up Profile"
+	rm -rf "${export_dir:?}/config"
 
-	cecho b "Encoding..." 1
-	# r2modman expects this header on the file
-	echo "#r2modman" > "$TMP_DIR/profile/${profile}_base64"
-	base64 -w 0 "$TMP_DIR/profile/$profile.zip" >> "$TMP_DIR/profile/${profile}_base64" || fatal_error "Failed to Encode Profile"
+	case "$shared" in
+		# Saving the Profile Locally
+		0)
+			cecho b "Moving..." 1
+			[[ ! -d "$PROFILES_DIR" ]] && mkdir -p "$PROFILES_DIR"
+			mv -f "$profile_zip" "$PROFILES_DIR/$profile.zip" || fatal_error "Failed to Save Profile Zip"
+			cecho g "Profile Saved"
+			;;
 
-	cecho b "Uploading..." 1
-	resp=$(curl -fSs --data-binary "@$TMP_DIR/profile/${profile}_base64" "$PROFILE_POST_URL") || fatal_error "Failed to Upload Profile"
-	code=$(echo "$resp" | jq -r -e '.key') || fatal_error "Failed to Parse JSON Response"
+		# Sharing the Profile via a r2modman code
+		 1)
+			cecho b "Encoding..." 1
+			# r2modman expects this header on the file
+			echo "#r2modman" > "${profile_path}_base64"
+			base64 -w 0 "$profile_zip" >> "${profile_path}_base64" || fatal_error "Failed to Encode Profile"
 
-	cecho g "Profile Code: $code"
+			cecho b "Uploading..." 1
+			resp=$(curl -fSs --data-binary "@${profile_path}_base64" "$PROFILE_POST_URL") || fatal_error "Failed to Upload Profile"
+			code=$(echo "$resp" | jq -r -e '.key') || fatal_error "Failed to Parse JSON Response"
 
-	# rename zip to profile code, so we can cache it
-	mv "$TMP_DIR/profile/$profile.zip" "$TMP_DIR/profile/$code.zip" || fatal_error "Failed to Rename Profile Zip to $code"
+			cecho g "Profile Code: $code"
+
+			# rename zip to profile code, so we can cache it
+			mv "$profile_zip" "$tmp_dir/$code.zip" || fatal_error "Failed to Rename Profile Zip to $code"
+			;;
+
+		 *)
+			 fatal_error "profile_export: Invalid shared argument"
+			 ;;
+	esac
+}
+
+function profile_delete {
+	local profile="$1"
+
+	[[ ! -f "$PROFILES_DIR/$profile.zip" ]] && fatal_error "Profile $profile not found"
+	rm "${PROFILES_DIR:?}/${profile:?}.zip" || fatal_error "Failed to delete profile"
 }
 
 ##################################
@@ -1117,16 +1173,19 @@ sanity_check
 
 case "$1" in
     ch*)  update_check;;
+    del*) profile_delete "$2";;
     dis*) toggle_mult_mods 0 "${@:2}";;
     ed*)  edit_configs "$2";;
     en*)  toggle_mult_mods 1 "${@:2}";;
-    exp*) profile_export "$2";;
+    exp*) profile_export 1 "$2" ;;
     hol*) toggle_hold "$2";;
-    imp*) profile_import "$2" "$3";;
+    imp*) profile_import 1 "$2" "$3";;
     ins*) get_pkgs && install_mult_mods "${@:2}";;
+	loa*) profile_import 0 "$2" "$3" ;;
     li* | ls) list_installed "${@:2}";;
     ref*) get_pkgs 1;;
     run)  launch_game;;
+	sav*) profile_export 0 "$2" ;;
     sea*) get_pkgs && search_pkgs "$2";;
     set*) [[ -z "$SETUP_COMPLETE" ]] && setup_bepin;;
     un* | rem*) uninstall_mult_mods "${@:2}";;

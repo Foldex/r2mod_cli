@@ -20,6 +20,7 @@ _r2mod ()
 	CONFIG_DIR="$BEPIN_DIR/config"
 	PLUGINS_DIR="$BEPIN_DIR/plugins"
 	PLUGINS_DISABLED_DIR="$BEPIN_DIR/plugins_disabled"
+	PROFILES_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/r2mod_cli/profiles"
 	TMP_DIR="/tmp/r2mod"
 
 	_arguments -C \
@@ -32,6 +33,7 @@ _r2mod ()
 			local -a subcommands
 			subcommands=(
 				'check:Check for Script Updates'
+				'delete:Delete a Profile'
 				'disable:Disable Mods'
 				'edit:Edit Mod Configs'
 				'enable:Enable Mods'
@@ -39,10 +41,12 @@ _r2mod ()
 				'hold:Toggle Mod Updates'
 				'import:Import r2modman mod profile'
 				'install:Install New Mod'
+				'load:Load a Profile'
 				'list:List Installed Mods'
 				'refresh:Force Refresh Package Cache'
 				'remove:Uninstall a mod'
 				'run:Launch Risk of Rain'
+				'save:Save a Profile'
 				'search:Search for Mods'
 				'setup:Install a Fresh BepInEx Setup'
 				'uninstall:Uninstall a mod'
@@ -103,6 +107,12 @@ _r2mod ()
 
 					[[ ${args[*]} == "${line[-2]}" ]] && return 1
 					compadd -a args
+					;;
+
+
+				loa | load | del | delete | sav | save)
+					[[ ! -d "$PROFILES_DIR" ]] && return 1
+					_files -W "$PROFILES_DIR" -g '*.zip(:r)'
 					;;
 
 				un | uninstall | hol | hold | rem | remove | dis | disable)

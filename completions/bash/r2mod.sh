@@ -7,7 +7,7 @@ _r2mod()
 	cur="${COMP_WORDS[COMP_CWORD]}"
 	prev="${COMP_WORDS[COMP_CWORD-1]}"
 	first="${COMP_WORDS[1]}"
-	commands="check disable edit enable export hold import install list refresh remove run search setup uninstall update version"
+	commands="check delete disable edit enable export hold import install list load refresh remove run save search setup uninstall update version"
 
 	if [[ -n "$R2MOD_INSTALL_DIR" ]]; then
 		# Custom install location
@@ -24,6 +24,7 @@ _r2mod()
 	CONFIG_DIR="$BEPIN_DIR/config"
 	PLUGINS_DIR="$BEPIN_DIR/plugins"
 	PLUGINS_DISABLED_DIR="$BEPIN_DIR/plugins_disabled"
+	PROFILES_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/r2mod_cli/profiles"
 	TMP_DIR="/tmp/r2mod"
 
 	case "$COMP_CWORD" in
@@ -58,6 +59,12 @@ _r2mod()
 				li | list | ls)
 					local args="all count"
 					COMPREPLY=( $(compgen -W "$args" -- "$cur" ) )
+					return 0
+					;;
+				loa | load | del | delete | sav | save)
+					[[ ! -d "$PROFILES_DIR" ]] && return 1
+					COMPREPLY=( $(cd "$PROFILES_DIR" && compgen -f -- "$cur") )
+					COMPREPLY=( "${COMPREPLY[@]/.zip/}" )
 					return 0
 					;;
 				un | uninstall | hol | hold | rem | remove | dis | disable)
