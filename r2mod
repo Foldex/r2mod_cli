@@ -167,7 +167,7 @@ function sanity_check {
 	local core_mods=("$R2API_STRING" "$HOOKGEN_STRING")
 
 	for i in "${core_mods[@]}"; do
-		if ! test_glob "$PLUGINS_DIR/$i-*" || [[ ! -d "$PATCHERS_DIR/$i" ]]; then
+		if ! test_glob "$PLUGINS_DIR/$i-*"; then
 			[[ ! -f "$API_FILE" ]] && get_pkgs
 			cecho p "${i##*-} Missing, Installing"
 			install_mod "$i"
