@@ -261,8 +261,8 @@ function search_pkgs {
 	[[ -z "$1" ]] && fatal_error "No Search Passed"
 	cecho b "Searching..."
 
-    result=$(jq -r -e --arg SEARCH "$query" \
-		'.[].versions[0] | select(.full_name + .description|test($SEARCH; "i")) | .full_name + "\t" + .description' \
+	result=$(jq -r -e --arg SEARCH "$query" \
+		'.[] | select(.is_deprecated == false) | .versions[0] | select(.full_name + .description|test($SEARCH; "i")) | .full_name + "\t" + .description'  \
 		"$API_FILE") || fatal_error "Failed to find $query"
 
 	while IFS=$'\t' read -r name desc; do
