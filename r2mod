@@ -837,6 +837,8 @@ function toggle_mod {
 		fatal_error "Trying to toggle a core mod"
 	fi
 
+	[[ ! -d "$PLUGINS_DISABLED_DIR" ]] && mkdir -p "$PLUGINS_DISABLED_DIR"
+
 	case "$enable" in
 		0)
 			cecho b "Disabling: $mod"
