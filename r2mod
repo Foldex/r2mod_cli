@@ -16,7 +16,7 @@ if [[ -n "$R2MOD_INSTALL_DIR" ]]; then
 	# Custom install location
 	R2_DIR="$R2MOD_INSTALL_DIR"
 elif [[ -d "$HOME/$FLATPAK_DIR/steamapps/common/Risk of Rain 2" ]]; then
-    # Flatpak install
+	# Flatpak install
 	R2_DIR="$HOME/$FLATPAK_DIR/steamapps/common/Risk of Rain 2"
 else
 	# Default
@@ -1137,7 +1137,7 @@ EOF
 			;;
 
 		# Sharing the Profile via a r2modman code
-		 1)
+		1)
 			cecho b "Encoding..." 1
 			# r2modman expects this header on the file
 			echo "#r2modman" > "${profile_path}_base64"
@@ -1153,9 +1153,9 @@ EOF
 			mv "$profile_zip" "$tmp_dir/$code.zip" || fatal_error "Failed to Rename Profile Zip to $code"
 			;;
 
-		 *)
-			 fatal_error "profile_export: Invalid shared argument"
-			 ;;
+		*)
+			fatal_error "profile_export: Invalid shared argument"
+			;;
 	esac
 }
 
@@ -1173,24 +1173,24 @@ function profile_delete {
 sanity_check
 
 case "$1" in
-    ch*)  update_check;;
-    del*) profile_delete "$2";;
-    dis*) toggle_mult_mods 0 "${@:2}";;
-    ed*)  edit_configs "$2";;
-    en*)  toggle_mult_mods 1 "${@:2}";;
-    exp*) profile_export 1 "$2" ;;
-    hol*) toggle_hold "$2";;
-    imp*) profile_import 1 "$2" "$3";;
-    ins*) get_pkgs && install_mult_mods "${@:2}";;
+	ch*)  update_check;;
+	del*) profile_delete "$2";;
+	dis*) toggle_mult_mods 0 "${@:2}";;
+	ed*)  edit_configs "$2";;
+	en*)  toggle_mult_mods 1 "${@:2}";;
+	exp*) profile_export 1 "$2" ;;
+	hol*) toggle_hold "$2";;
+	imp*) profile_import 1 "$2" "$3";;
+	ins*) get_pkgs && install_mult_mods "${@:2}";;
 	loa*) profile_import 0 "$2" "$3" ;;
-    li* | ls) list_installed "${@:2}";;
-    ref*) get_pkgs 1;;
-    run)  launch_game;;
+	li* | ls) list_installed "${@:2}";;
+	ref*) get_pkgs 1;;
+	run)  launch_game;;
 	sav*) profile_export 0 "$2" ;;
-    sea*) get_pkgs && search_pkgs "$2";;
-    set*) [[ -z "$SETUP_COMPLETE" ]] && setup_bepin;;
-    un* | rem*) uninstall_mult_mods "${@:2}";;
-    upd*) update_mods;;
-    ver*) echo "$VERSION";;
+	sea*) get_pkgs && search_pkgs "$2";;
+	set*) [[ -z "$SETUP_COMPLETE" ]] && setup_bepin;;
+	un* | rem*) uninstall_mult_mods "${@:2}";;
+	upd*) update_mods;;
+	ver*) echo "$VERSION";;
 	*) [[ -z "$SETUP_COMPLETE" ]] && help;;
 esac
