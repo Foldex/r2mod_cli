@@ -47,6 +47,7 @@ MOD_FULL_REGEX="([A-Za-z0-9_-]+)-([A-Za-z0-9_]+)-([0-9]+\.[0-9]+\.[0-9]+)(-HOLD)
 MOD_REGEX="([A-Za-z0-9_-]+)-([A-Za-z0-9_]+)$"
 MOD_VERSION_REGEX="([0-9]+)\.([0-9]+)\.([0-9]+)$"
 PROFILE_REGEX="^[A-Za-z0-9][A-Za-z0-9|_|-|.]{8,}$"
+MM_LINK_REGEX="ror2mm://v1/install/thunderstore.io/([A-Za-z0-9_-]+)/([A-Za-z0-9_]+)/([0-9]+\.[0-9]+\.[0-9]+)/$"
 
 # Thunderstore API
 API_URL="https://thunderstore.io/api/v1/package/"
@@ -682,6 +683,18 @@ function install_mult_mods {
 	resolve_mod_deps
 }
 
+function install_mm_link {
+	if [[ "$1" =~ $MM_LINK_REGEX ]]; then
+		local author="${BASH_REMATCH[1]}"
+		local name="${BASH_REMATCH[2]}"
+		local version="${BASH_REMATCH[3]}"
+
+		install_mult_mods "$author-$name-$version"
+	else
+		fatal_error "$1 is not a Valid RoR2MM Link"
+	fi
+}
+
 function uninstall_mod {
 	local author
 	local name
@@ -1199,5 +1212,6 @@ case "$1" in
 	un* | rem*) uninstall_mult_mods "${@:2}";;
 	upd*) update_mods;;
 	ver*) echo "$VERSION";;
+	ror2mm*) get_pkgs && install_mm_link "$1";;
 	*) [[ -z "$SETUP_COMPLETE" ]] && help;;
 esac
