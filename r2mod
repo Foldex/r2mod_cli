@@ -173,6 +173,11 @@ function sanity_check {
 			install_mod "$i"
 		fi
 	done
+
+	if [[ ! -d "$PATCHERS_DIR/$HOOKGEN_STRING" ]]; then
+		cecho p "$HOOKGEN_STRING Missing, Installing"
+		install_mod "$HOOKGEN_STRING"
+	fi
 }
 
 function launch_game {
