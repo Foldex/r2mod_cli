@@ -168,6 +168,13 @@ All Files, Old Versions, and Backups can be found in `/tmp/r2mod`
 
 ## Changelog
 
+### 1.2.0
+
+- Basic profile support
+- Support installing from `ror2mm://` links
+- Remove check for R2API patcher files
+- Ignore deprecated mods in completion & searches
+
 ### 1.1.0
 
 - Dependency Support
