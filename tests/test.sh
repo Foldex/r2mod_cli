@@ -71,7 +71,6 @@ yes | ../r2mod setup > /dev/null
 [[ -d "$BEPIN_DIR" ]] && NEW_TIME=$(date -r "$BEPIN_DIR" +%s)
 
 if [[ ! -d "$BEPIN_DIR" || \
-	! -d "$PATCHERS_DIR/tristanmcpherson-R2API" || \
 	! -d "$PATCHERS_DIR/RiskofThunder-HookGenPatcher" || \
 	"$OLD_TIME" -ge "$NEW_TIME" ]]; then
 	cecho r "Setup Failed!" 1
