@@ -79,6 +79,7 @@ Accepts shorthand for command names.
 
 ```
 r2mod ch(eck): Check for Script Updates
+r2mod del(ete) ProfileName: Delete Local Profile
 r2mod dis(able) (Mod-Dependency-String): Disable Mods
 r2mod ed(it) ConfigName: Edit Mod Configs
 r2mod en(able) (Mod-Dependency-String): Enable Mods
@@ -87,8 +88,10 @@ r2mod hol(d): Toggle Mod Updates
 r2mod imp(ort) ProfileCode: Install r2modman mod profile
 r2mod ins(tall) Mod-Dependency-String: Install New Mod
 r2mod li(st) (count|all) : List or Count Installed Mods
+r2mod loa(d) ProfileName: Import Local Profile
 r2mod ref(resh): Force Refresh Package Cache
 r2mod run: Launch Risk of Rain
+r2mod sav(e) ProfileName: Export Local Profile
 r2mod sea(rch): Search for Mods
 r2mod set(up): Install a Fresh BepInEx Setup
 r2mod un(install) Mod-Dependency-String: Uninstall Mod
