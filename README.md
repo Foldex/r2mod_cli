@@ -171,6 +171,12 @@ All Files, Old Versions, and Backups can be found in `/tmp/r2mod`
 
 ## Changelog
 
+### 1.2.1
+
+- Fix for BepInEx patchers folder no longer being supplied
+- Now checks for steam folders using `$XDG_DATA_HOME`
+- Improved check for proton override file
+
 ### 1.2.0
 
 - Basic profile support
