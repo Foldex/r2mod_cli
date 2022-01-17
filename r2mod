@@ -63,6 +63,9 @@ BEPIN_STRING="bbepis-BepInExPack"
 R2API_STRING="tristanmcpherson-R2API"
 HOOKGEN_STRING="RiskofThunder-HookGenPatcher"
 
+# Proton DLL Overrides File
+PROTON_OVERRIDES="$R2_COMPAT/pfx/user.reg"
+
 # Mod Dependencies
 declare -A MOD_DEPS
 
@@ -971,9 +974,14 @@ function setup_bepin {
 			mv "$BEPIN_DIR" "$TMP_DIR/old/BepInEx-$(date +%F_%T)" || fatal_error "Failed to Backup Old Install"
 		fi
 
-		if ! grep -q "winhttp" "$R2_COMPAT/pfx/user.reg"; then
-			cecho b "Overriding winhttp dll..."
-			sed -i '/\[Software\\\\Wine\\\\DllOverrides\].*/a \"winhttp\"=\"native,builtin\"' "$R2_COMPAT/pfx/user.reg"
+		if [[ ! -f "$PROTON_OVERRIDES" ]]; then
+			cecho p "Proton overrides file not found, BepInEx might not be loaded at launch"
+			cecho p "$PROTON_OVERRIDES"
+		else
+			if ! grep -q "winhttp" "$PROTON_OVERRIDES"; then
+				cecho b "Overriding winhttp dll..."
+				sed -i '/\[Software\\\\Wine\\\\DllOverrides\].*/a \"winhttp\"=\"native,builtin\"' "$PROTON_OVERRIDES"
+			fi
 		fi
 
 		get_pkgs
