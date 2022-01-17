@@ -158,6 +158,7 @@ function sanity_check {
 	cd "$R2_DIR" || fatal_error "Failed to CD to R2 Dir"
 
 	[[ -d "$R2_DIR/BepInEx" && ! -d "$PLUGINS_DISABLED_DIR" ]] && mkdir -p "$PLUGINS_DISABLED_DIR"
+	[[ -d "$R2_DIR/BepInEx" && ! -d "$PATCHERS_DIR" ]] && mkdir -p "$PATCHERS_DIR"
 
 	# Double Check After Setup
 	if [[ "$SETUP_COMPLETE" == 1 ]]; then
@@ -543,6 +544,8 @@ function install_patcher_files {
 	if [[ "${#patcher_files[@]}" -eq 1  && -d "${patcher_files[0]}" ]]; then
 		patcher_path=${patcher_files[0]}
 	fi
+
+	[[ -d "$R2_DIR/BepInEx" && ! -d "$PATCHERS_DIR" ]] && mkdir -p "$PATCHERS_DIR"
 
 	[[ -d "$PATCHERS_DIR/$mod_full_name" ]] && rm -rf "${PATCHERS_DIR:?}/$mod_full_name"
 	mv -f "$patcher_path" "$PATCHERS_DIR/$mod_full_name"
