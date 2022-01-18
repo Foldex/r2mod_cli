@@ -182,7 +182,7 @@ function sanity_check {
 	done
 
 	if [[ ! -d "$PATCHERS_DIR/$HOOKGEN_STRING" ]]; then
-        [[ ! -f "$API_FILE" ]] && get_pkgs
+		[[ ! -f "$API_FILE" ]] && get_pkgs
 		cecho p "$HOOKGEN_STRING Missing, Installing"
 		install_mod "$HOOKGEN_STRING"
 	fi
