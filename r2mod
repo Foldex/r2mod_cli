@@ -420,20 +420,25 @@ function list_installed {
 	local list_all
 	local last_arg=${@: -1}
 	[[ "$last_arg" =~ ^a(ll)?$ ]] && list_all=1
+	local ignored_dirs="-I MMHOOK -I RoR2BepInExPack"
 
 	# Count Plugins
 	if [[ "$1" =~ ^c(ount)?$ ]]; then
 
 		if [[ -n "$list_all" ]]; then
-			cecho p "Enabled Plugins: $(ls -I RoR2BepInExPack "$PLUGINS_DIR" | wc -l)"
+			# shellcheck disable=SC2086
+			cecho p "Enabled Plugins: $(ls $ignored_dirs "$PLUGINS_DIR" | wc -l)"
 			cecho p "Disabled Plugins: $(ls "$PLUGINS_DISABLED_DIR" | wc -l)"
 		else
-			ls -I RoR2BepInExPack "$PLUGINS_DIR" | wc -l
+			# shellcheck disable=SC2086
+			ls $ignored_dirs "$PLUGINS_DIR" | wc -l
 		fi
 	else
 	# List Plugin Names
 		[[ -n "$list_all" ]] && cecho p "Enabled Plugins:"
-		ls -I RoR2BepInExPack -1 --color=auto --group-directories-first "$PLUGINS_DIR"
+
+		# shellcheck disable=SC2086
+		ls $ignored_dirs -1 --color=auto --group-directories-first "$PLUGINS_DIR"
 
 		if [[ -n "$list_all" ]]; then
 			echo
@@ -783,7 +788,7 @@ function update_mods {
 
 	for mod_dir in */; do
 
-		if [[ $mod_dir =~ ^(RoR2BepInExPack)/?$ ]]; then
+		if [[ $mod_dir =~ ^(MMHOOK|RoR2BepInExPack)/?$ ]]; then
 			continue;
 		fi
 
@@ -1122,7 +1127,7 @@ function profile_export {
 
 	for mod_dir in */; do
 
-		if [[ $mod_dir =~ ^(RoR2BepInExPack)/?$ ]]; then
+		if [[ $mod_dir =~ ^(MMHOOK|RoR2BepInExPack)/?$ ]]; then
 			continue;
 		fi
 
