@@ -171,6 +171,12 @@ All Files, Old Versions, and Backups can be found in `/tmp/r2mod`
 
 ## Changelog
 
+### 1.2.2
+
+- Support HookGen including configs
+- Support BepInEx including plugins
+- Fix for trying to install missing Hookgen while API cache did not exist
+
 ### 1.2.1
 
 - Fix for BepInEx patchers folder no longer being supplied
