@@ -560,6 +560,33 @@ function install_patcher_files {
 	mv -f "$patcher_path" "$PATCHERS_DIR/$mod_full_name"
 }
 
+function install_config_files {
+	# Config files get installed to the config folder instead of plugins
+	local mod_full_name="$1"
+	local api_ver="$2"
+	local config_files=()
+	local config_path="$PLUGINS_DIR/$mod_full_name-$api_ver"
+
+	if [[ -d "$config_path/config" ]]; then
+		config_path+="/config"
+	elif [[ -d "$config_path/BepInEx/config" ]]; then
+		config_path+="/BepInEx/config"
+	else
+		return
+	fi
+
+	mapfile -t config_files < <(compgen -G "$config_path/*.cfg")
+
+	[[ "${#config_files[@]}" -eq 0 ]] && return
+	cecho b "Moving Config Files..." 1
+
+	[[ -d "$R2_DIR/BepInEx" && ! -d "$CONFIG_DIR" ]] && mkdir -p "$CONFIG_DIR"
+
+	for file in "$config_files"; do
+		mv -f "$file" "$CONFIG_DIR/"
+	done
+}
+
 function backup_old_mod {
 	local mod_dir="$1"
 	if [[ -d "$mod_dir" ]]; then
@@ -653,6 +680,12 @@ function dl_mod {
 
 		# Patcher Files
 		install_patcher_files "$mod_full_name" "$api_ver"
+
+		# Config Files
+		# Limited to Hookgen so as to not overwrite user configs
+		if [[ "$mod_full_name" =~  ^($HOOKGEN_STRING)$ ]]; then
+			install_config_files "$mod_full_name" "$api_ver"
+		fi
 
 		# Backup Old Dir
 		backup_old_mod "$mod_dir"
