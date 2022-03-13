@@ -69,7 +69,7 @@ _r2mod()
 					;;
 				un | uninstall | hol | hold | rem | remove | dis | disable)
 					[[ ! -d "$PLUGINS_DIR" ]] && return 1
-					COMPREPLY=( $(cd "$PLUGINS_DIR" && compgen -d -X "@(*R2API*|MMHOOK|bbepis-BepInExPack-*|RiskofThunder-HookGenPatcher-*)" -- "$cur") )
+					COMPREPLY=( $(cd "$PLUGINS_DIR" && compgen -d -X "@(*R2API*|MMHOOK|RoR2BepInExPack|bbepis-BepInExPack-*|RiskofThunder-HookGenPatcher-*)" -- "$cur") )
 					return 0
 					;;
 				*)

@@ -117,7 +117,7 @@ _r2mod ()
 
 				un | uninstall | hol | hold | rem | remove | dis | disable)
 					[[ ! -d "$PLUGINS_DIR" ]] && return 1
-					_files -W "$PLUGINS_DIR" -F "( *R2API* MMHOOK bbepis-BepInExPack-* RiskofThunder-HookGenPatcher-*)" -/
+					_files -W "$PLUGINS_DIR" -F "( *R2API* MMHOOK RoR2BepInExPack bbepis-BepInExPack-* RiskofThunder-HookGenPatcher-*)" -/
 					;;
 
 			esac
