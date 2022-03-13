@@ -856,11 +856,7 @@ function update_mods {
 		cd "$PLUGINS_DIR" || fatal_error "Cannot CD into $PLUGINS_DIR"
 	fi
 
-	for mod_dir in */; do
-
-		if [[ $mod_dir =~ ^(MMHOOK|RoR2BepInExPack)/?$ ]]; then
-			continue;
-		fi
+	for mod_dir in *-*-*/; do
 
 		if [[ "${mod_dir%%/}" =~ $MOD_FULL_REGEX ]]; then
 			author="${BASH_REMATCH[1]}"
@@ -1197,11 +1193,7 @@ function profile_export {
 
 	cd "$PLUGINS_DIR" || fatal_error "Cannot CD into $PLUGINS_DIR"
 
-	for mod_dir in */; do
-
-		if [[ $mod_dir =~ ^(MMHOOK|RoR2BepInExPack)/?$ ]]; then
-			continue;
-		fi
+	for mod_dir in *-*-*/; do
 
 		if [[ "${mod_dir%%/}" =~ $MOD_FULL_REGEX ]]; then
 			author="${BASH_REMATCH[1]}"
