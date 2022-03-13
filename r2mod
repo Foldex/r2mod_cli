@@ -259,6 +259,10 @@ function check_pkgs {
 	# shellcheck disable=SC2155
 	local file_size=$(wc -c < "$1")
 	[[ "$file_size" -lt "$min_size" ]] && return 1
+
+	# Check json with jq to be sure it's valid
+	jq -reM '""' "$1" > /dev/null 2>&1 || return 1
+
 	return 0
 }
 
