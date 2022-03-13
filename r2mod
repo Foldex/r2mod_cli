@@ -881,7 +881,7 @@ function update_mods {
 	   resolve_mod_deps
 	fi
 
-	if [[ -z "$upd_disabled" ]] && [[ $(ls -A "$PLUGINS_DISABLED_DIR") ]]; then
+	if [[ -z "$upd_disabled" ]] && test_glob "$PLUGINS_DISABLED_DIR/*-*-*"; then
 		update_mods 1
 	fi
 
