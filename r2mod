@@ -66,6 +66,19 @@ HOOKGEN_STRING="RiskofThunder-HookGenPatcher"
 # Proton DLL Overrides File
 PROTON_OVERRIDES="$R2_COMPAT/pfx/user.reg"
 
+# COLORS
+BLUE="\e[34m"
+GREEN="\e[32m"
+PURPLE="\e[35m"
+RED="\e[31m"
+CEND="\e[0m"
+
+# UNICODE ICONS
+ARROW="→"
+CHECK="✓"
+CROSS="✖"
+INFO="✦"
+
 # Mod Dependencies
 declare -A MOD_DEPS
 
@@ -98,28 +111,19 @@ function help {
 }
 
 function cecho {
-	# COLORS
-	local blue="\e[34m"
-	local green="\e[32m"
-	local purple="\e[35m"
-	local red="\e[31m"
-	local cend="\e[0m"
-
-	# UNICODE
-	local arrow="→"
-	local check="✓"
-	local cross="✖"
-	local info="✦"
+	local text
 
 	# INDENT
 	[[ "$3" == 1 ]] && local indent="  "
 
 	case "$1" in
-		b) echo -e "${indent}${blue}${arrow} ${2}${cend}";;
-		g) echo -e "${indent}${green}${check} ${2}${cend}";;
-		p) echo -e "${indent}${purple}${info} ${2}${cend}";;
-		r) echo -e "${indent}${red}${cross} ${2}${cend}";;
+		b) text="${indent}${BLUE}${ARROW} ${2}${CEND}";;
+		g) text="${indent}${GREEN}${CHECK} ${2}${CEND}";;
+		p) text="${indent}${PURPLE}${INFO} ${2}${CEND}";;
+		r) text="${indent}${RED}${CROSS} ${2}${CEND}";;
 	esac
+
+	echo -e "$text"
 }
 
 function error {
@@ -132,6 +136,38 @@ function fatal_error {
 	exit 1
 }
 
+function colorize_mod_name {
+	local author
+	local name
+	local version
+	local text
+
+	if [[ "$1" =~ $MOD_FULL_REGEX ]]; then
+		author="${BASH_REMATCH[1]}"
+		name="${BASH_REMATCH[2]}"
+		version="${BASH_REMATCH[3]}"
+		text="${BLUE}$author${CEND}-${GREEN}$name${CEND}-${PURPLE}$version${CEND}"
+	elif [[ "$1" =~ $MOD_REGEX ]]; then
+		author="${BASH_REMATCH[1]}"
+		name="${BASH_REMATCH[2]}"
+		text="${BLUE}$author${CEND}-${GREEN}$name${CEND}"
+	else
+		error "$1 is not a Valid Mod Name"
+	fi
+
+	# Do not print color if we are outputting to a pipe
+	if [[ ! -t 1 ]]; then
+		text="$1"
+	fi
+
+	echo -e "$text"
+}
+
+function find_mods {
+	[[ ! -d "$1" ]] && fatal_error "$1 dir does not exist"
+	find "$1" -maxdepth 1 -type d -name '*-*-*' -printf '%f\n'
+}
+
 function test_glob {
 	compgen -G "$1" > /dev/null
 }
@@ -140,7 +176,7 @@ function sanity_check {
 	ERROR=0
 
 	# Check Script Dependencies
-	declare script_deps=( 7z awk base64 curl date grep jq sed wc )
+	declare script_deps=( 7z awk base64 curl date find grep jq sed wc )
 	for i in "${script_deps[@]}"; do
 		if ! type -P "$i" > /dev/null; then
 			error "$i is missing from PATH."
@@ -418,32 +454,33 @@ function is_core_mod { [[ "$1" =~ ^($BEPIN_STRING|$R2API_STRING|$HOOKGEN_STRING)
 
 function list_installed {
 	local list_all
+	local mod
 	local last_arg=${@: -1}
 	[[ "$last_arg" =~ ^a(ll)?$ ]] && list_all=1
-	local ignored_dirs="-I MMHOOK -I RoR2BepInExPack"
 
 	# Count Plugins
 	if [[ "$1" =~ ^c(ount)?$ ]]; then
 
 		if [[ -n "$list_all" ]]; then
-			# shellcheck disable=SC2086
-			cecho p "Enabled Plugins: $(ls $ignored_dirs "$PLUGINS_DIR" | wc -l)"
-			cecho p "Disabled Plugins: $(ls "$PLUGINS_DISABLED_DIR" | wc -l)"
+			cecho p "Enabled Plugins: $(find_mods "$PLUGINS_DIR" | wc -l)"
+			cecho p "Disabled Plugins: $(find_mods "$PLUGINS_DISABLED_DIR" | wc -l)"
 		else
-			# shellcheck disable=SC2086
-			ls $ignored_dirs "$PLUGINS_DIR" | wc -l
+			find_mods "$PLUGINS_DIR" | wc -l
 		fi
 	else
 	# List Plugin Names
 		[[ -n "$list_all" ]] && cecho p "Enabled Plugins:"
 
-		# shellcheck disable=SC2086
-		ls $ignored_dirs -1 --color=auto --group-directories-first "$PLUGINS_DIR"
+		find_mods "$PLUGINS_DIR" | while read -r mod; do
+			colorize_mod_name "$mod"
+		done
 
 		if [[ -n "$list_all" ]]; then
 			echo
 			cecho p "Disabled Plugins:"
-			ls -1 --color=auto --group-directories-first "$PLUGINS_DISABLED_DIR"
+			find_mods "$PLUGINS_DISABLED_DIR" | while read -r mod; do
+				colorize_mod_name "$mod"
+			done
 		fi
 	fi
 }
@@ -1106,7 +1143,9 @@ function profile_import {
 
 	if [[ "$preview" =~ ^[Pp](review)?$ ]]; then
 		cecho b "Previewing..."
-		cat "$profile_path"
+		while read -r mod enabled; do
+			colorize_mod_name "$mod"
+		done < "$profile_path"
 		return
 	fi
 
