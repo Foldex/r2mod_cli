@@ -27,15 +27,15 @@ The following programs should be installed:
 
 ### Arch
 
-`sudo pacman -S curl gawk jq p7zip sed`
+`sudo pacman -S curl findutils gawk jq p7zip sed`
 
 ### Fedora
 
-`sudo dnf install curl gawk jq p7zip sed`
+`sudo dnf install curl findutils gawk jq p7zip sed`
 
 ### Ubuntu
 
-`sudo apt-get install curl gawk jq p7zip-full sed`
+`sudo apt-get install curl findutils gawk jq p7zip-full sed`
 
 ## Usage
 
