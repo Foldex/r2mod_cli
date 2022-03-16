@@ -11,7 +11,7 @@ STEAM_ID="632360"
 # Dirs
 FLATPAK_DIR=".var/app/com.valvesoftware.Steam/.local/share/Steam"
 
-if [[ -n "$R2MOD_INSTALL_DIR" ]]; then
+if [[ -n "$R2MOD_INSTALL_DIR" && "$R2MOD_INSTALL_DIR" != "default" ]]; then
 	# Custom install location
 	R2_DIR="$R2MOD_INSTALL_DIR"
 elif [[ -d "$HOME/$FLATPAK_DIR/steamapps/common/Risk of Rain 2" ]]; then
@@ -22,7 +22,7 @@ else
 	R2_DIR="${XDG_DATA_HOME:-"$HOME/.local/share"}/Steam/steamapps/common/Risk of Rain 2"
 fi
 
-if [[ -n "$R2MOD_COMPAT_DIR" ]]; then
+if [[ -n "$R2MOD_COMPAT_DIR" && "$R2MOD_COMPAT_DIR" != "default" ]]; then
 	# Custom install location
 	R2_COMPAT="$R2MOD_COMPAT_DIR"
 elif [[ -d "$HOME/$FLATPAK_DIR/steamapps/compatdata/$STEAM_ID" ]]; then
