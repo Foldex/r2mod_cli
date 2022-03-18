@@ -8,6 +8,10 @@
 VERSION="1.2.2"
 STEAM_ID="632360"
 
+# r2mod Flatpak
+FLATPAK_ID="io.github.Foldex.r2mod"
+COMPLETION_VER="1"
+
 # Dirs
 FLATPAK_DIR=".var/app/com.valvesoftware.Steam/.local/share/Steam"
 
@@ -187,6 +191,9 @@ function sanity_check {
 		fatal_error "Missing Script Dependencies"
 	fi
 
+    # Check Flatpak Completion Install
+    is_flatpak && flatpak_comp_install
+
 	# Check File Paths
 	[[ ! -d "$R2_DIR" ]] && cecho r "$R2_DIR" && fatal_error "Risk of Rain 2 Folder Not Found"
 
@@ -247,6 +254,55 @@ function launch_game {
 	# shellcheck disable=SC2086
 	$steam_cmd -applaunch $STEAM_ID > /dev/null 2>&1 &
 	disown
+}
+
+function is_flatpak {
+    [[ -f "/.flatpak-info" ]]
+}
+
+function flatpak_comp_install {
+    # Flatpak does not let us install shell completions to the usual root locations
+    # Thus we have to install them into user owned dirs
+    is_flatpak || fatal_error "Not running in a flatpak"
+    local share="$XDG_DATA_HOME"
+    local bash_install="$share/bash-completion/completions/$FLATPAK_ID"
+    local zsh_install="$share/zsh/site-functions/_$FLATPAK_ID"
+
+    local comp_ver="$XDG_DATA_HOME/.last_installed_completion"
+    local last_comp_ver=0
+
+    # Tracking completion install versions
+    # So we know when to overwrite the existing ones
+    [[ -f "$comp_ver" ]] && last_comp_ver=$(cat "$comp_ver")
+    [[ ! $last_comp_ver =~ ^[0-9]+$ ]] && last_comp_ver=0
+    [[ "$COMPLETION_VER" -le "$last_comp_ver" && -f "$zsh_install" && -f "$bash_install" ]] && return
+
+    cecho b "Installing Shell Completions"
+
+    if [[ ! -f "$bash_install" && ! -f "$zsh_install" ]]; then
+        cecho p "You may wish to alias io.github.Foldex.r2mod to r2mod"
+        cecho p "alias r2mod='flatpak run io.github.Foldex.r2mod'"
+    fi
+
+    cecho b "Bash..." 1
+    # Install to Local Bash Completion Dir
+    mkdir -p "$share/bash-completion/completions/"
+    cp -f "/app/data/completions/bash/r2mod.sh" "$bash_install"
+
+    # ZSH does not have a local completion dir by default
+    # But it does load completions from the $fpath env var
+    # We'll have to make one and prompt users to add it to $fpath
+    cecho b "ZSH..." 1
+    if [[ ! -f "$zsh_install" ]]; then
+        cecho p "ZSH Does not source a local completions dir by default. You must add" 1
+        cecho p 'export fpath=(${XDG_DATA_HOME:-"$HOME/.local/share"}/zsh/site-functions $fpath)' 1
+        cecho p "to your zsh profile" 1
+    fi
+
+    mkdir -p "$share/zsh/site-functions/"
+    cp -f "/app/data/completions/zsh/_r2mod" "$zsh_install"
+
+    echo "$COMPLETION_VER" > "$comp_ver"
 }
 
 ###################################
