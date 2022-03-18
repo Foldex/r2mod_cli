@@ -580,6 +580,12 @@ function install_core {
 		"$R2MOD_STRING")
 			local input
 
+            # Disable this kind of update from inside flatpak
+            if is_flatpak; then
+                cecho p "r2mod_cli: Using flatpak, manually updating is disabled" 1
+                return
+            fi
+
 			# Only install if newer version available
 			if ! version_gt "$api_ver" "$VERSION"; then
 			   cecho g "r2mod_cli: Up to date " 1
