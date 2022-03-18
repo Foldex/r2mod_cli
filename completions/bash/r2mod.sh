@@ -98,4 +98,4 @@ _r2mod()
 	esac
 }
 
-complete -F _r2mod r2mod
+complete -F _r2mod r2mod io.github.Foldex.r2mod

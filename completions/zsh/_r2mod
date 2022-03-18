@@ -1,4 +1,4 @@
-#compdef r2mod
+#compdef r2mod io.github.Foldex.r2mod
 
 _r2mod ()
 {
