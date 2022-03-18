@@ -171,6 +171,13 @@ All Files, Old Versions, and Backups can be found in `/tmp/r2mod`
 
 ## Changelog
 
+### 1.3.0
+
+- Add r2mod flatpak version support
+- Use jq to validate on package cache update
+- Improved filtering of non-mod files in plugins dir
+- Colorize `list` and `import preview`
+
 ### 1.2.2
 
 - Support HookGen including configs
