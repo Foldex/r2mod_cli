@@ -23,6 +23,12 @@ A simple mod manager written in Bash for Linux users.
 
 ## Installation
 
+### AUR
+
+r2mod is available in the Arch AUR as `r2mod_cli`
+
+`yay -S r2mod_cli`
+
 ### Flatpak
 
 r2mod is (not yet) available from flathub as `io.github.Foldex.r2mod`
@@ -31,7 +37,7 @@ r2mod is (not yet) available from flathub as `io.github.Foldex.r2mod`
 
 #### Alias
 
-Flatpak bin exports in `/var/lib/flatpak/exports/bin` or `~/.local/share/flatpak/exports/bin` should allow you to run r2mod using `io.github.Foldex.r2mod`, provided those locations are in your `$PATH`
+Flatpak bin [exports](https://wiki.archlinux.org/title/Flatpak#Run_applications) should allow you to run r2mod using `io.github.Foldex.r2mod`.
 
 But you may wish to set up an alias for easier use.
 
@@ -43,13 +49,7 @@ Flatpak does not allow shell completions to be installed in the usual root owned
 
 The flatpak will install them under user owned directories at runtime instead. 
 
-For ZSH, you may need to add this location to `$fpath`
-
-### AUR
-
-r2mod is available in the Arch AUR as `r2mod_cli`
-
-`yay -S r2mod_cli`
+For ZSH, you may need to add `$HOME/.local/share/zsh/site-functions` to your `$fpath`
 
 ### Manual
 
@@ -99,21 +99,22 @@ If you've installed Risk of Rain 2 to a different location, please export the en
 
 ##### Flatpak
 
-If you wish to set a custom install location for the flatpak, you may use overrides or [FlatSeal](https://github.com/tchx84/Flatseal) to edit the permissions and environment variables.
+If you wish to use a custom install location with the flatpak, you may use overrides or [Flatseal](https://github.com/tchx84/Flatseal) to edit the permissions and environment variables.
 
 - The env vars must be an absolute path, they are literal strings and do not have `~` expansion.
 
 - Do NOT include `Risk of Rain 2` in the `R2MOD_INSTALL_DIR` env path, an issue with flatpak does not allow for spaces in environment variables. Just point up to `steamapps/common`.
 
-- Add `--user` if it is a user installed flatpak
+- Use `flatpak override --user` if it is a user installed flatpak
 
-`flatpak override --env='R2MOD_INSTALL_DIR=/home/foldex/Games/Steam/SteamLibrary/steamapps/common' io.github.Foldex.r2mod`
-
-`flatpak override --env='R2MOD_COMPAT_DIR=/home/foldex/Games/Steam/SteamLibrary/steamapps/compatdata/632360' io.github.Foldex.r2mod`
-
-`flatpak override --filesystem='~/Games/Steam/SteamLibrary/steamapps/common/Risk of Rain 2' io.github.Foldex.r2mod`
-
-`flatpak override --filesystem='~/Games/Steam/SteamLibrary/steamapps/compatdata/632360' io.github.Foldex.r2mod`
+``` sh
+flatpak override \
+--env='R2MOD_INSTALL_DIR=/home/foldex/Games/Steam/SteamLibrary/steamapps/common' \
+--env='R2MOD_COMPAT_DIR=/home/foldex/Games/Steam/SteamLibrary/steamapps/compatdata/632360' \
+--filesystem='~/Games/Steam/SteamLibrary/steamapps/common/Risk of Rain 2' \
+--filesystem='~/Games/Steam/SteamLibrary/steamapps/compatdata/632360' \
+io.github.Foldex.r2mod
+```
 
 ### Command List
 
@@ -203,7 +204,7 @@ Run again to remove the hold.
 
 Updates for r2mod will be automatically checked, but not installed.
 
-Installing r2mod updates can be done like any other mod:
+If you manually installed r2mod, updates can be done like any other mod:
 
 `r2mod install Foldex-r2mod_cli`
 
