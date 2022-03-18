@@ -1,6 +1,6 @@
 # r2mod_cli
 
-| [Features](#features) | [Requirements](#requirements) | [Usage](#usage) | [Changelog](#changelog) |
+| [Features](#features) | [Installation](#installation) | [Usage](#usage) | [Changelog](#changelog) |
 |---|---|---|---|
 
 A simple mod manager written in Bash for Linux users.
@@ -21,37 +21,61 @@ A simple mod manager written in Bash for Linux users.
 - Supports Flatpak Steam Installs
 - Tab Completion
 
-## Requirements
+## Installation
 
-The following programs should be installed:
+### Flatpak
 
-### Arch
+r2mod is (not yet) available from flathub as `io.github.Foldex.r2mod`
 
-`sudo pacman -S curl findutils gawk jq p7zip sed`
+`flatpak install flathub io.github.Foldex.r2mod`
 
-### Fedora
+#### Alias
 
-`sudo dnf install curl findutils gawk jq p7zip sed`
+Flatpak bin exports in `/var/lib/flatpak/exports/bin` or `~/.local/share/flatpak/exports/bin` should allow you to run r2mod using `io.github.Foldex.r2mod`, provided those locations are in your `$PATH`
 
-### Ubuntu
+But you may wish to set up an alias for easier use.
 
-`sudo apt-get install curl findutils gawk jq p7zip-full sed`
+`alias r2mod="io.github.Foldex.r2mod"`
 
-## Usage
+#### Completions
 
-### Install
+Flatpak does not allow shell completions to be installed in the usual root owned locations.
 
-#### AUR
+The flatpak will install them under user owned directories at runtime instead. 
+
+For ZSH, you may need to add this location to `$fpath`
+
+### AUR
 
 r2mod is available in the Arch AUR as `r2mod_cli`
 
 `yay -S r2mod_cli`
 
-#### Manual
+### Manual
+
+The prior methods are preferred, but if you wish to manually install:
 
 Extract the zip and run `sudo make install` inside its directory.
 
+#### Dependencies
+
+##### Arch
+
+`sudo pacman -S curl findutils gawk jq p7zip sed`
+
+##### Fedora
+
+`sudo dnf install curl findutils gawk jq p7zip sed`
+
+##### Ubuntu
+
+`sudo apt-get install curl findutils gawk jq p7zip-full sed`
+
+## Usage
+
 ### First Setup
+
+Make sure you have run Risk of Rain 2 beforehand to create the needed directories.
 
 It is heavily recommended to run `r2mod setup` to create a new install.
 
@@ -72,6 +96,24 @@ If you've installed Risk of Rain 2 to a different location, please export the en
 `$R2MOD_COMPAT_DIR` also exists for custom locations of Steam's compatdata directory.
 
 `export R2MOD_COMPAT_DIR="$HOME/custom/dir/steamapps/compatdata/632360"`
+
+##### Flatpak
+
+If you wish to set a custom install location for the flatpak, you may use overrides or [FlatSeal](https://github.com/tchx84/Flatseal) to edit the permissions and environment variables.
+
+- The env vars must be an absolute path, they are literal strings and do not have `~` expansion.
+
+- Do NOT include `Risk of Rain 2` in the `R2MOD_INSTALL_DIR` env path, an issue with flatpak does not allow for spaces in environment variables. Just point up to `steamapps/common`.
+
+- Add `--user` if it is a user installed flatpak
+
+`flatpak override --env='R2MOD_INSTALL_DIR=/home/foldex/Games/Steam/SteamLibrary/steamapps/common' io.github.Foldex.r2mod`
+
+`flatpak override --env='R2MOD_COMPAT_DIR=/home/foldex/Games/Steam/SteamLibrary/steamapps/compatdata/632360' io.github.Foldex.r2mod`
+
+`flatpak override --filesystem='~/Games/Steam/SteamLibrary/steamapps/common/Risk of Rain 2' io.github.Foldex.r2mod`
+
+`flatpak override --filesystem='~/Games/Steam/SteamLibrary/steamapps/compatdata/632360' io.github.Foldex.r2mod`
 
 ### Command List
 
