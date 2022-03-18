@@ -213,6 +213,10 @@ All Files, Old Versions, and Backups can be found in `/tmp/r2mod`
 
 ## Changelog
 
+### 1.3.1
+
+- Fix for flatpak not allowing env vars to contain spaces
+
 ### 1.3.0
 
 - Add r2mod flatpak version support
