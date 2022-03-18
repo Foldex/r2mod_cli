@@ -191,8 +191,8 @@ function sanity_check {
 		fatal_error "Missing Script Dependencies"
 	fi
 
-    # Check Flatpak Completion Install
-    is_flatpak && flatpak_comp_install
+	# Check Flatpak Completion Install
+	is_flatpak && flatpak_comp_install
 
 	# Check File Paths
 	[[ ! -d "$R2_DIR" ]] && cecho r "$R2_DIR" && fatal_error "Risk of Rain 2 Folder Not Found"
