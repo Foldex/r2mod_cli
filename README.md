@@ -214,6 +214,11 @@ All Files, Old Versions, and Backups can be found in `/tmp/r2mod`
 
 ## Changelog
 
+### 1.3.2
+
+- Fix flatpak trying to use sandboxed version of `$XDG_DATA_HOME`
+- Disabled `run` command for flatpak version
+
 ### 1.3.1
 
 - Fix for flatpak not allowing env vars to contain spaces
