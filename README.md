@@ -31,7 +31,7 @@ r2mod is available in the Arch AUR as `r2mod_cli`
 
 ### Flatpak
 
-r2mod is (not yet) available from flathub as `io.github.Foldex.r2mod`
+r2mod is available from flathub as `io.github.Foldex.r2mod`
 
 `flatpak install flathub io.github.Foldex.r2mod`
 
@@ -139,7 +139,7 @@ r2mod sea(rch): Search for Mods
 r2mod set(up): Install a Fresh BepInEx Setup
 r2mod un(install) Mod-Dependency-String: Uninstall Mod
 r2mod upd(ate): Update All Exisiting Mods
-r2mod ver(sion): Print Version"
+r2mod ver(sion): Print Version
 ```
 
 ### Installing a Mod
