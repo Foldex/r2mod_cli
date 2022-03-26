@@ -245,6 +245,8 @@ function sanity_check {
 }
 
 function launch_game {
+	is_flatpak && cecho p "Disabled inside flatpak version" && return
+
 	local input
 	local steam_cmd="steam"
 
