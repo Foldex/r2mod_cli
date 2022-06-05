@@ -94,9 +94,9 @@ _r2mod ()
 
 					case $line[2] in
 						"")
-							args=( "all" "count" )
+							args=( "all" "count" "names" )
 							;;
-						c | count)
+						c | count | n | names)
 							args=( "all" )
 							;;
 						*)
