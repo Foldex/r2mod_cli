@@ -530,8 +530,11 @@ function is_core_mod { [[ "$1" =~ ^($BEPIN_STRING|$R2API_STRING|$HOOKGEN_STRING)
 function list_installed {
 	local list_all
 	local mod
+	local names_only
 	local last_arg=${@: -1}
+	
 	[[ "$last_arg" =~ ^a(ll)?$ ]] && list_all=1
+	[[ "$1" =~ ^n(ames)?$ ]] && names_only=1
 
 	# Count Plugins
 	if [[ "$1" =~ ^c(ount)?$ ]]; then
@@ -542,25 +545,12 @@ function list_installed {
 		else
 			find_mods "$PLUGINS_DIR" | wc -l
 		fi
-	elif [[ "$1" =~ ^n(ames)?$ ]]; then
-		[[ -n "$list_all" ]] && cecho p "Enabled Plugins:"
-
-		find_mods "$PLUGINS_DIR" | while read -r mod; do
-			colorize_mod_name "${mod%-*}"
-		done
-
-		if [[ -n "$list_all" ]]; then
-			echo
-			cecho p "Disabled Plugins:"
-			find_mods "$PLUGINS_DISABLED_DIR" | while read -r mod; do
-				colorize_mod_name "$mod"
-			done
-		fi
 	else
 	# List Plugin Names
 		[[ -n "$list_all" ]] && cecho p "Enabled Plugins:"
 
 		find_mods "$PLUGINS_DIR" | while read -r mod; do
+			[[ -n "$names_only" ]] && mod="${mod%-[0-9]*.[0-9]*.[0-9]*}"
 			colorize_mod_name "$mod"
 		done
 
@@ -568,6 +558,7 @@ function list_installed {
 			echo
 			cecho p "Disabled Plugins:"
 			find_mods "$PLUGINS_DISABLED_DIR" | while read -r mod; do
+				[[ -n "$names_only" ]] && mod="${mod%-[0-9]*.[0-9]*.[0-9]*}"
 				colorize_mod_name "$mod"
 			done
 		fi
