@@ -57,7 +57,7 @@ _r2mod()
 					return 0
 					;;
 				li | list | ls)
-					local args="all count"
+					local args="all count names"
 					COMPREPLY=( $(compgen -W "$args" -- "$cur" ) )
 					return 0
 					;;

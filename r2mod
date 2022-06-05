@@ -114,7 +114,7 @@ function help {
 	r2mod hol(d): Toggle Mod Updates
 	r2mod imp(ort) ProfileCode: Install r2modman mod profile
 	r2mod ins(tall) Mod-Dependency-String: Install New Mod
-	r2mod li(st) (count|all) : List or Count Installed Mods
+	r2mod li(st) (count|names|all) : List, list only mod names, or Count Installed Mods
 	r2mod loa(d) ProfileName: Import Local Profile
 	r2mod ref(resh): Force Refresh Package Cache
 	r2mod run: Launch Risk of Rain
@@ -530,8 +530,11 @@ function is_core_mod { [[ "$1" =~ ^($BEPIN_STRING|$R2API_STRING|$HOOKGEN_STRING)
 function list_installed {
 	local list_all
 	local mod
+	local names_only
 	local last_arg=${@: -1}
+	
 	[[ "$last_arg" =~ ^a(ll)?$ ]] && list_all=1
+	[[ "$1" =~ ^n(ames)?$ ]] && names_only=1
 
 	# Count Plugins
 	if [[ "$1" =~ ^c(ount)?$ ]]; then
@@ -547,6 +550,7 @@ function list_installed {
 		[[ -n "$list_all" ]] && cecho p "Enabled Plugins:"
 
 		find_mods "$PLUGINS_DIR" | while read -r mod; do
+			[[ -n "$names_only" ]] && mod="${mod%-[0-9]*.[0-9]*.[0-9]*}"
 			colorize_mod_name "$mod"
 		done
 
@@ -554,6 +558,7 @@ function list_installed {
 			echo
 			cecho p "Disabled Plugins:"
 			find_mods "$PLUGINS_DISABLED_DIR" | while read -r mod; do
+				[[ -n "$names_only" ]] && mod="${mod%-[0-9]*.[0-9]*.[0-9]*}"
 				colorize_mod_name "$mod"
 			done
 		fi
