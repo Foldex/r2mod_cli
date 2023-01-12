@@ -62,7 +62,7 @@ TMP_DIR="/tmp/r2mod"
 MOD_FULL_REGEX="([A-Za-z0-9_-]+)-([A-Za-z0-9_]+)-([0-9]+\.[0-9]+\.[0-9]+)(-HOLD)?$"
 MOD_REGEX="([A-Za-z0-9_-]+)-([A-Za-z0-9_]+)$"
 MOD_VERSION_REGEX="([0-9]+)\.([0-9]+)\.([0-9]+)$"
-PROFILE_REGEX="^[A-Za-z0-9][A-Za-z0-9|_|-|.]{8,}$"
+PROFILE_REGEX="^([A-Fa-f0-9]+-?){5}$"
 MM_LINK_REGEX="ror2mm://v1/install/thunderstore.io/([A-Za-z0-9_-]+)/([A-Za-z0-9_]+)/([0-9]+\.[0-9]+\.[0-9]+)/$"
 
 # Thunderstore API
@@ -71,8 +71,8 @@ API_FILE="$TMP_DIR/pkgs.json"
 API_TIME="2 hours" # Update Interval
 
 # R2ModMan API
-PROFILE_GET_URL="https://r2modman-hastebin.herokuapp.com/raw"
-PROFILE_POST_URL="https://r2modman-hastebin.herokuapp.com/documents"
+PROFILE_GET_URL="https://thunderstore.io/api/experimental/legacyprofile/get"
+PROFILE_POST_URL="https://thunderstore.io/api/experimental/legacyprofile/create/"
 
 # Core Mod Strings
 R2MOD_STRING="Foldex-r2mod_cli"
@@ -532,7 +532,7 @@ function list_installed {
 	local mod
 	local names_only
 	local last_arg=${@: -1}
-	
+
 	[[ "$last_arg" =~ ^a(ll)?$ ]] && list_all=1
 	[[ "$1" =~ ^n(ames)?$ ]] && names_only=1
 
@@ -1333,7 +1333,7 @@ EOF
 			base64 -w 0 "$profile_zip" >> "${profile_path}_base64" || fatal_error "Failed to Encode Profile"
 
 			cecho b "Uploading..." 1
-			resp=$(curl -fSs --data-binary "@${profile_path}_base64" "$PROFILE_POST_URL") || fatal_error "Failed to Upload Profile"
+			resp=$(curl -fSs -H 'Content-Type: application/octet-stream' --data-binary "@${profile_path}_base64" "$PROFILE_POST_URL") || fatal_error "Failed to Upload Profile"
 			code=$(echo "$resp" | jq -r -e '.key') || fatal_error "Failed to Parse JSON Response"
 
 			cecho g "Profile Code: $code"
