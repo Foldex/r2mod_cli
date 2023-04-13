@@ -10,7 +10,7 @@ STEAM_ID="632360"
 
 # r2mod Flatpak
 FLATPAK_ID="io.github.Foldex.r2mod"
-COMPLETION_VER="1"
+COMPLETION_VER="2"
 
 # Dirs
 FLATPAK_DIR=".var/app/com.valvesoftware.Steam/.local/share/Steam"
@@ -282,6 +282,7 @@ function flatpak_comp_install {
 	local share="$R2_XDG_DATA_DIR"
     local bash_install="$share/bash-completion/completions/$FLATPAK_ID"
     local zsh_install="$share/zsh/site-functions/_$FLATPAK_ID"
+    local fish_install="$share/fish/vendor_completions.d/$FLATPAK_ID.sh"
 
     local comp_ver="$XDG_DATA_HOME/.last_installed_completion"
     local last_comp_ver=0
@@ -290,11 +291,11 @@ function flatpak_comp_install {
     # So we know when to overwrite the existing ones
     [[ -f "$comp_ver" ]] && last_comp_ver=$(cat "$comp_ver")
     [[ ! $last_comp_ver =~ ^[0-9]+$ ]] && last_comp_ver=0
-    [[ "$COMPLETION_VER" -le "$last_comp_ver" && -f "$zsh_install" && -f "$bash_install" ]] && return
+    [[ "$COMPLETION_VER" -le "$last_comp_ver" && -f "$zsh_install" && -f "$bash_install" && -f "$fish_install" ]] && return
 
     cecho b "Installing Shell Completions"
 
-    if [[ ! -f "$bash_install" && ! -f "$zsh_install" ]]; then
+    if [[ ! -f "$bash_install" && ! -f "$zsh_install" && ! -f "$fish_install" ]]; then
         cecho p "You may wish to alias io.github.Foldex.r2mod to r2mod"
         cecho p "alias r2mod='flatpak run io.github.Foldex.r2mod'"
     fi
@@ -316,6 +317,10 @@ function flatpak_comp_install {
 
     mkdir -p "$share/zsh/site-functions/"
     cp -f "/app/data/completions/zsh/_r2mod" "$zsh_install"
+
+    cecho b "Fish..." 1
+    mkdir -p "$share/fish/vendor_completions.d/"
+    cp -f "/app/data/completions/fish/r2mod.sh" "$fish_install"
 
     echo "$COMPLETION_VER" > "$comp_ver"
 }
