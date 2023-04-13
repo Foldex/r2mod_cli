@@ -214,6 +214,10 @@ All Files, Old Versions, and Backups can be found in `/tmp/r2mod`
 
 ## Changelog
 
+### 1.3.4
+
+- Added completion for fish
+
 ### 1.3.3
 
 - Updated ModCode Import/Export to new Thunderstore API
