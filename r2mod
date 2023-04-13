@@ -282,7 +282,7 @@ function flatpak_comp_install {
 	local share="$R2_XDG_DATA_DIR"
     local bash_install="$share/bash-completion/completions/$FLATPAK_ID"
     local zsh_install="$share/zsh/site-functions/_$FLATPAK_ID"
-    local fish_install="$share/fish/vendor_completions.d/$FLATPAK_ID.sh"
+    local fish_install="$share/fish/vendor_completions.d/$FLATPAK_ID.fish"
 
     local comp_ver="$XDG_DATA_HOME/.last_installed_completion"
     local last_comp_ver=0
@@ -320,7 +320,7 @@ function flatpak_comp_install {
 
     cecho b "Fish..." 1
     mkdir -p "$share/fish/vendor_completions.d/"
-    cp -f "/app/data/completions/fish/r2mod.sh" "$fish_install"
+    cp -f "/app/data/completions/fish/r2mod.fish" "$fish_install"
 
     echo "$COMPLETION_VER" > "$comp_ver"
 }
