@@ -41,7 +41,7 @@ Flatpak bin [exports](https://wiki.archlinux.org/title/Flatpak#Run_applications)
 
 But you may wish to set up an alias for easier use.
 
-`alias r2mod="io.github.Foldex.r2mod"`
+`alias r2mod="flatpak run io.github.Foldex.r2mod"`
 
 #### Completions
 
